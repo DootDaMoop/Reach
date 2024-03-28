@@ -1,14 +1,15 @@
 {% extends '_layout.html' %}
-
+<!--Implement the index.css file-->
 {% block title %}Home Page{% endblock %}
 
 {% block body %}
 <div id="header">
-<h1 class="text-3xl font-bold underline">
-    Hello world!
-</h1>
+    <h1 class="text-3xl font-bold underline">
+        Hello world!
+    </h1>
+
+    <nav>
+        <a href="/calendar" class="mb-3 text-lg md:text-xl ">To Calendar</a>
+    </nav>
 </div>
-<nav>
-<a href="/calendar" class="mb-3 text-lg text-gray-500 md:text-xl dark:text-gray-400">To Calendar</a>
-</nav>
 {% endblock %}
