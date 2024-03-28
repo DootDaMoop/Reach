@@ -1,0 +1,42 @@
+.calendar-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.calendar-table th, td {
+    padding: 10px;
+    text-align: center;
+}
+
+.calendar-table th {
+    background-color: whitesmoke;
+}
+
+.calendar-table td:hover {
+    background-color: gray;
+}
+
+.calendar-header {
+    text-align: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.calendar-day {
+    border: 2px solid black;
+    width: 100px;
+    height: 100px;
+}
+
+.prev-month-calendar-day {
+    background-color: lightgray;
+}
+
+.next-month-calendar-day {
+    background-color: lightgray;
+}
+
+.selected-date {
+    background-color: aqua;
+    color: white;
+}
