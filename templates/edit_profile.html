@@ -1,0 +1,52 @@
+{% extends '_layout.html' %}
+
+{% block head_script %}
+
+{% endblock %}
+
+{% block title %}Edit Profile Page{% endblock %}
+
+{% block body %}
+<h1>Edit Profile</h1>
+<div id="profile-info">
+    <form action="">
+
+        <label for="profile_picture">Profile Picture</label>
+        <input type="file" name="profile_picture" id="profile_picture" value="{{  user.pfp  }}">
+        <br>
+        <br>
+
+        <h3>Login Information</h3>
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" value="{{  user.username  }}">
+        <br>
+
+        <label for="password">Password</label>
+        <input type="text" id="password" name="password" value="{{  user.password  }}">
+        <br>
+
+        <label for="email">Email</label>
+        <input type= "email" id="email" name="email" value="{{  user.email  }}">
+        <br>
+        <br>
+
+        <h3>Personal Information</h3>
+        <label for="first_name">First Name (Optional)</label>
+        <input type="text" id="first_name" name="first_name" value="{{  user.first_name  }}">
+        <br>
+
+        <label for="last_name">Last Name (Optional)</label>
+        <input type="text" id="last_name" name="last_name" value="{{  user.last_name  }}">
+        <br>
+        <br>
+
+        <h3>Social Medias</h3>
+        <label for="instagram">Instagram (Optional)</label>
+        <input type="text" id="instagram" name="instagram" value="{{  user.instagram  }}">
+        <br>
+
+        <label for="snapchat">Snapchat (Optional)</label>
+        <input type="text" id="snapchat" name="snapchat" value="{{  user.snapchat}}">
+    </form>
+</div>
+{% endblock %}

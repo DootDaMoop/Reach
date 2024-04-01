@@ -1,0 +1,25 @@
+{% extends '_layout.html' %}
+
+{% block head_script %}
+
+{% endblock %}
+
+{% block title %}Profile Page{% endblock %}
+
+{% block body %}
+<h1>Profile</h1>
+<div id="profile-info">
+    <ul style="list-style-type:none;">
+        <li><img src="" alt=""></li>
+        <li>Username: {{  user.username }}</li>
+        <li>Password: {{  user.password  }}</li>
+        <li></li>
+        <li>Name: {{  full_name  }}</li>
+        <li>Email: {{  user.email  }}</li>
+        <li></li>
+        <li>Instagram: {{  user.instagram  }}</li>
+        <li>Snapchat: {{  user.snapchat  }}</li>
+    </ul> 
+</div>
+<button>Edit</button>
+{% endblock %}
