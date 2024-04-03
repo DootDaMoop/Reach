@@ -10,13 +10,14 @@ import google.auth.transport.requests
 from model.User import User
 from user_repo.User_management import User_management
 #FLASK_DEBUG=true flask run
-app = Flask("app")
+
+app = Flask(__name__)
 
 user = User()
 user_management = User_management(r"user_repo\users.csv")
 
 
-with open("client_secret.json", 'r') as file:
+with open("client_secrets.json", 'r') as file:
     config = json.load(file)
 
     client_id = config['web']['client_id']
@@ -32,7 +33,7 @@ app.secret_key = client_secret
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
 GOOGLE_CLIENT_ID = client_id
-client_secrets_file = os.path.join(pathlib.Path(__file__).parent, "client_secret.json")
+client_secrets_file = os.path.join(pathlib.Path(__file__).parent, "client_secrets.json")
 
 flow = Flow.from_client_secrets_file(
     client_secrets_file=client_secrets_file,
