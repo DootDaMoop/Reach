@@ -3,8 +3,31 @@
 {% block title %}Home Page{% endblock %}
 
 {% block body %}
-<h1 class="text-3xl font-bold underline">
-    Hello world!
-</h1>
-<a href='/login'><button>Login</button></a>
+<!-- Custom Login Form -->
+<div>
+    <h2>login with your email</h2>
+    <form action="/login_manual" method="post">
+        <div>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+        </div>
+        <div>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        <button type="submit">Login</button>
+    </form>
+</div>
+
+<!-- Registration Link -->
+
+<!-- Google Sign In -->
+<div>
+    <a href='/login'><button>Sign in with Google</button></a>
+</div>
+
+
+<div>
+    <a href="/registration">Register</a>
+</div>
 {% endblock %}

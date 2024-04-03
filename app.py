@@ -1,19 +1,37 @@
 import os
 import pathlib
-
 import requests
+import json
 from flask import Flask, session, abort, redirect, request, render_template
 from google.oauth2 import id_token
 from google_auth_oauthlib.flow import Flow
 from pip._vendor import cachecontrol
 import google.auth.transport.requests
+from model.User import User
+from user_repo.User_management import User_management
+#FLASK_DEBUG=true flask run
+app = Flask("app")
 
-app = Flask("Google Login App")
-app.secret_key = "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"
+user = User()
+user_management = User_management(r"user_repo\users.csv")
+
+
+with open("client_secret.json", 'r') as file:
+    config = json.load(file)
+
+    client_id = config['web']['client_id']
+    project_id = config['web']['project_id']
+    auth_uri = config['web']['auth_uri']
+    token_uri = config['web']['token_uri']
+    auth_provider_x509_cert_url = config['web']['auth_provider_x509_cert_url']
+    client_secret = config['web']['client_secret']
+    redirect_uris = config['web']['redirect_uris']
+
+app.secret_key = client_secret
 
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
-GOOGLE_CLIENT_ID = "760386242947-ptusoa981b0mei1ab3sjskcme237f88i.apps.googleusercontent.com"
+GOOGLE_CLIENT_ID = client_id
 client_secrets_file = os.path.join(pathlib.Path(__file__).parent, "client_secret.json")
 
 flow = Flow.from_client_secrets_file(
@@ -33,14 +51,14 @@ def login_is_required(function):
     return wrapper
 
 
-@app.post("/login")
+@app.get("/login")
 def login():
     authorization_url, state = flow.authorization_url()
     session["state"] = state
     return redirect(authorization_url)
 
 
-@app.post("/callback")
+@app.get("/callback")
 def callback():
     flow.fetch_token(authorization_response=request.url)
 
@@ -57,13 +75,18 @@ def callback():
         request=token_request,
         audience=GOOGLE_CLIENT_ID
     )
-
+    
+    session["first_name"] = id_info.get("given_name")
+    session["last_name"] = id_info.get("family_name")
+    session["email"] = id_info.get("email")
+    session["pfp"] = id_info.get("picture")
     session["google_id"] = id_info.get("sub")
-    session["name"] = id_info.get("name")
+    session["first_and_last"] = id_info.get("name")
+
+    user.update_from_session(session)
     return redirect("/protected_area")
 
-
-@app.post("/logout")
+@app.get("/logout")
 def logout():
     session.clear()
     return redirect("/")
@@ -71,13 +94,62 @@ def logout():
 
 @app.get("/")
 def index():
-    return render_template("index.html") 
+    return render_template('index.html')
 
 
+@app.get('/registration')
+def registration():
+    return render_template('registration.html')
+
+
+@app.post('/register')
+def register():
+    email = request.form['email']
+    password = request.form['password']
+    confirm_password = request.form['confirm_password']
+    first_name = request.form['first_name']
+    last_name = request.form['last_name']
+
+    if not password == confirm_password:
+
+        return "Passwords do not match. Please try again.", 400
+    
+    success, message = user_management.register_user(email, password, first_name, last_name)
+
+    if success:
+        user.update_from_registration(email, password, first_name, last_name)
+        return redirect('/')
+    else:
+        return message, 400
+
+    
+
+@app.post('/login_manual')
+def login_manual():
+
+    user_exists, valid = user_management.validate_user(request.form["email"], request.form["password"])    
+
+    if user_exists:
+        session["email"] = request.form["email"]
+        session["first_name"] = user_management.get_first_name_from_email(request.form["email"])
+        session["last_name"] = user_management.get_last_name_from_email(request.form["email"])
+        session["pfp"] = None
+        session["google_id"] = None
+        session["first_and_last"] = None
+        user.update_from_session(session)
+
+        return redirect("/protected_area")
+    else:
+        return "Invalid email or password. Please try again.", 400
+
+
+
+
+#the page you land after you log in 
 @app.get("/protected_area")
 @login_is_required
 def protected_area():
-    return f"Hello {session['name']}! <br/> <a href='/logout'><button>Logout</button></a>"
+    return f"Hello {user.first_name}! <br/> <a href='/logout'><button>Logout</button></a>"
 
 
 if __name__ == "__main__":
