@@ -1,0 +1,17 @@
+#header
+{
+    color: white;
+    
+    /*Change background color later*/
+    background-color: black;
+}
+nav
+{
+    text-align: right;
+    padding-right: 1em;
+}
+
+nav:hover
+{
+    color: blue;
+}

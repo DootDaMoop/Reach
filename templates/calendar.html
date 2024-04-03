@@ -1,0 +1,14 @@
+{% extends '_layout.html' %}
+
+{% block head_script %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='calendar.css') }}">
+{% endblock %}
+{% block title %}Calendar Page{% endblock %}
+
+{% block main %}
+<div id="calendar">
+    <script src="{{ url_for('static', filename='calendar.js') }}"></script>
+</div>
+<button onclick="prevMonth()">Prev Month</button>
+<button onclick="nextMonth()">Next Month</button>
+{% endblock %}
