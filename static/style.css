@@ -1,0 +1,53 @@
+/*Reset and General Styles*/
+* {
+    margin:0;
+    padding: 0;
+    box-sizing: border-box;
+}
+header {
+    background-color: purple;
+}
+footer {
+    background-color: purple;
+}
+main {
+    background-color: gray;
+    display: flex; /* Make main a flex container */
+    flex-direction: column; /* Stack children vertically */
+    height: 100vh; /* Take up the full viewport height */
+}
+.sidebar {
+    background-color: darkgoldenrod;
+}
+.feed {
+    background-color: sandybrown;
+}
+body {
+    background-color: darkgray;
+}
+/* */
+.container {
+    display: flex;
+    max-width: 100%;
+    flex-grow: 1;
+    flex-direction: column;
+}
+.sidebar {
+    display: flex;
+    width: 10%;
+}
+.feed {
+    display: flex;
+    flex-direction: column;
+    /*flex-wrap: wrap;*/
+    width: 90%;
+    justify-content: center;
+}
+/*.card {
+    background-color: gold;
+    width: 250px;
+    height: 250px;
+    border-radius: 5px;
+    box-shadow: 1px;
+    margin: 10px;
+}*/

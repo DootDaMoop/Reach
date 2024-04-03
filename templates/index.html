@@ -2,8 +2,25 @@
 
 {% block title %}Home Page{% endblock %}
 
-{% block body %}
-<h1 class="text-3xl font-bold underline">
-    Hello world!
-</h1>
+{% block main %}
+<section class="container">
+    <div class="sidebar bg-gray-400">
+        <ul>
+            <li>UNCC Game Dev</li>
+            <li>Lambda Phi Epsilon</li>
+            <li>ITSC 3155</li>
+            <li>PNNMB Trumpets</li>
+
+        </ul>
+    </div>
+
+    <div class="feed bg-white">
+        <div class="card border-bold">
+            <div class="card-image"></div>
+            <h2>Title</h2>
+            <p>Text Description</p>
+            <button>Submit</button>
+        </div>
+    </div>
+</section>
 {% endblock %}
