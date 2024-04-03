@@ -102,6 +102,10 @@ def index():
 def registration():
     return render_template('registration.html')
 
+@app.get('/calendar')
+def calendar():
+    return render_template('calendar.html')
+
 
 @app.post('/register')
 def register():
