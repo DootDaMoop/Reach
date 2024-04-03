@@ -7,6 +7,7 @@
 {% block title %}Edit Profile Page{% endblock %}
 
 {% block body %}
+<!--ADD FORM ACTION-->
 <h1>Edit Profile</h1>
 <div id="profile-info">
     <form action="">
@@ -47,6 +48,8 @@
 
         <label for="snapchat">Snapchat (Optional)</label>
         <input type="text" id="snapchat" name="snapchat" value="{{  user.snapchat}}">
+
+        <input type="submit" value="Save">
     </form>
 </div>
 {% endblock %}

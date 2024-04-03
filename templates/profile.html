@@ -1,25 +1,33 @@
 {% extends '_layout.html' %}
 
 {% block head_script %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='profile.css') }}">
 
 {% endblock %}
 
 {% block title %}Profile Page{% endblock %}
 
 {% block body %}
-<h1>Profile</h1>
-<div id="profile-info">
-    <ul style="list-style-type:none;">
-        <li><img src="" alt=""></li>
-        <li>Username: {{  user.username }}</li>
-        <li>Password: {{  user.password  }}</li>
-        <li></li>
-        <li>Name: {{  full_name  }}</li>
-        <li>Email: {{  user.email  }}</li>
-        <li></li>
-        <li>Instagram: {{  user.instagram  }}</li>
-        <li>Snapchat: {{  user.snapchat  }}</li>
-    </ul> 
-</div>
-<button>Edit</button>
+<main>
+    <h1 class="text-3xl font-bold">Profile</h1>
+    <div id="edit-button">
+        <a href="edit_profile.html">
+            <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">Edit</button>
+        </a>
+    </div>
+    <div id="profile-info">
+        <ul style="list-style-type:none;">
+            <li><img src="" alt=""></li>
+            <li>Username: {{  user.username }}</li>
+            <li>Password: {{  user.password  }}</li>
+            <li></li>
+            <li>Name: {{  full_name  }}</li>
+            <li>Email: {{  user.email  }}</li>
+            <li></li>
+            <li>Instagram: {{  user.instagram  }}</li>
+            <li>Snapchat: {{  user.snapchat  }}</li>
+        </ul> 
+    </div>
+</main>
+
 {% endblock %}
