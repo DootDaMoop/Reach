@@ -6,6 +6,9 @@
     box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
 }
+li:hover {
+    cursor: pointer;
+}
 header {
     align-content: center;    
 }
@@ -44,6 +47,9 @@ nav ul li:hover {
 nav ul li {
     padding-left: 8px;
 }
+.active {
+    color: gray
+}
 /*- - - - - Side Bar Styles - - - - - */
 .sidebar {
 
@@ -54,7 +60,6 @@ nav ul li {
 .sidebar li:hover {
     background: lightgray;
     font-weight: 600;
-    cursor: pointer;
 }
 /*- - - - - Side Bar Styles - - - - - */
 
@@ -124,6 +129,11 @@ img {
     margin-bottom: 10px;
 }
 /*- - - - - CONTENT HEADERS - - - - -*/
+/*- - - - - HIDDEN - - - - - */
+.hidden {
+    display: none;
+}
+/*- - - - - HIDDEN - - - - - */
 
 
 
