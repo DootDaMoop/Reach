@@ -40,3 +40,6 @@
     background-color: aqua;
     color: white;
 }
+#calendar {
+    display: none;
+}

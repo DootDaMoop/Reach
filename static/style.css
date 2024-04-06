@@ -1,9 +1,129 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 /*Reset and General Styles*/
 * {
     margin:0;
     padding: 0;
     box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+header {
+    align-content: center;    
+}
+footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+.nav-grid ul{
+    display: flex;
+    justify-content: start;
+
 }
 .grid-container {
     display: grid;
+    grid-template-columns: 1fr 6fr;
+    gap: 3px;
+    padding: 4px;
 }
+.feed {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(300px, 1fr));
+    /*background: linear-gradient(45deg, lightblue, violet);*/
+}
+.feed-nav ul{
+    list-style: none;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+}
+nav ul li:hover {
+    font-weight: 600;
+    text-decoration: underline;
+}
+nav ul li {
+    padding-left: 8px;
+}
+/*- - - - - Side Bar Styles - - - - - */
+.sidebar {
+
+}
+.sidebar li {
+    padding: 4px 10px;
+}
+.sidebar li:hover {
+    background: lightgray;
+    font-weight: 600;
+    cursor: pointer;
+}
+/*- - - - - Side Bar Styles - - - - - */
+
+
+/*- - - - - CARD STYLES - - - - -*/
+.card { /* General Card Designs */
+    display: grid;
+    height: 260px;
+    grid-template-rows: 5fr 1fr;
+    grid-template-columns: 30% 70%;
+    /*border: solid;*/
+    box-shadow: 2px 3px 6px;
+    background-color: aliceblue;
+    padding: 4px;
+    gap: 4px;
+    margin: 4px 8px;
+}
+.card div {
+    padding: 10px;
+    /*border: solid 1px;*/
+}
+.card div:nth-child(1) {
+    grid-column: 1;
+    grid-row: 1;
+    width: auto;
+}
+.card div:nth-child(2) {
+    grid-column: 2;
+    grid-row: 1;
+    width: auto;
+}
+.card div:nth-child(3) {
+    grid-column: 1 / span 2; /* This makes the third child span both columns of the second row */
+    grid-row: 2;
+    width: auto;
+}
+.card-image {
+    height: auto;
+    width: auto;
+    overflow: hidden;
+}
+.card-buttons {
+    display: flex;
+    justify-content: space-evenly;
+}
+.card-buttons button {
+    background: rgb(145, 145, 145);
+    /*border: solid 1px;*/
+    width: 80px;
+    border-radius: 10px;
+}
+.card-buttons button:hover {
+    background-color: rgb(165, 165, 165);
+}
+/*- - - - - CARD STYLES - - - - -*/
+/*- - - - - General Image Styles - - - - -*/
+img {
+    height: auto;
+    width: auto;
+    object-fit: fill;
+    display: block;
+}
+/*- - - - - General Image Styles - - - - -*/
+/*- - - - - CONTENT HEADERS - - - - -*/
+.main-header {
+    font-size: larger;
+    margin-bottom: 10px;
+}
+/*- - - - - CONTENT HEADERS - - - - -*/
+
+
+

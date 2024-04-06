@@ -1,0 +1,1 @@
+const event = document.querySelector('.card');
