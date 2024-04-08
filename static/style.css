@@ -48,7 +48,8 @@ nav ul li {
     padding-left: 8px;
 }
 .active {
-    color: gray
+    color: darkgray;
+    text-decoration: underline;
 }
 /*- - - - - Side Bar Styles - - - - - */
 .sidebar {
