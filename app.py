@@ -17,8 +17,8 @@ load_dotenv()
 
 app = Flask(__name__)
 
-user = User()
-user_management = User_management(r"user_repo\users.csv")
+# user = User()
+# user_management = User_management(r"user_repo\users.csv")
 
 with open("client_secrets.json", 'r') as file:
     config = json.load(file)
@@ -55,8 +55,8 @@ def login_is_required(function):
     return wrapper
 
 
-@app.get("/login")
-def login():
+@app.get("/google_login")
+def google_login():
     authorization_url, state = flow.authorization_url()
     session["state"] = state
     return redirect(authorization_url)
@@ -87,7 +87,11 @@ def callback():
     session["google_id"] = id_info.get("sub")
     session["first_and_last"] = id_info.get("name")
 
-    user.update_from_session(session)
+    if not user_repo.user_exists(id_info.get("name")):
+        user_repo.register_user(id_info.get("name"), id_info.get("email"), None, id_info.get("given_name"),id_info.get("family_name"), id_info.get("sub"))
+    
+    user = user_repo.get_user_from_username(id_info.get("name"))
+    session['user_id'] = user['user_id']
     return redirect("/protected_area")
 
 @app.get("/logout")

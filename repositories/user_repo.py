@@ -43,7 +43,7 @@ def user_exists(username: str) -> bool:
             user = cur.fetchone()
             return user is not None
 
-def register_user(username: str, email: str, password: str, first_name: str, last_name: str) -> dict[str, Any]:
+def register_user(username: str, email: str, password: str, first_name: str, last_name: str, google_id: str | None) -> dict[str, Any]:
     """Register a new user if the email is valid and not already taken."""
     if not is_valid_email(email):
         return False, "Invalid email format."
@@ -55,10 +55,10 @@ def register_user(username: str, email: str, password: str, first_name: str, las
     with pool.connection() as conn:
         with conn.cursor(row_factory=dict_row) as cur:
             cur.execute('''
-                        INSERT INTO "user" (user_name, user_password, user_email, user_first_name, user_last_name)
-                        VALUES (%s, %s, %s, %s, %s)
+                        INSERT INTO "user" (user_name, user_password, user_email, user_first_name, user_last_name, google_id)
+                        VALUES (%s, %s, %s, %s, %s, %s)
                         RETURNING user_id
-                        ''', [username, password, email, first_name, last_name])
+                        ''', [username, password, email, first_name, last_name, google_id])
             user_id = cur.fetchone()
             if user_id is None:
                 raise Exception('Failed to create user.')
