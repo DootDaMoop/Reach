@@ -1,0 +1,60 @@
+{% extends '_layout.html' %}
+
+{% block title %}Home Page{% endblock %}
+{%  block head_script %}<script src="/static/feed.js" defer></script>{% endblock %}
+{% block main %}
+<section class="grid-container">
+    <div class="main-header"><h1>My Groups:</h1></div>
+    <div class="main-header"><h1>Community Feed:</h1></div>
+    <div class="sidebar">
+        <ul>
+            <li><button>UNCC Game Dev</button></li>
+            <li><button>Lambda Phi Epsilon</button></li>
+            <li><button>ITSC 3155</button></li>
+            <li><button>PNNMB Trumpets</button></li>
+
+        </ul>
+    </div>
+
+    <div class="feed bg-white">
+            <nav class="feed-nav">
+                <ul>
+                    <li id="activate-event"class="active mb-3 text-lg md:text-xl">Events</li>
+                    <li id="activate-calendar" class="mb-3 text-lg md:text-xl">Calendar</li>
+                    <!-- 
+                    <li class="active"><a href="/" class="mb-3 text-lg md:text-xl">Events</a></li>
+                    <li class="inactive"><a href="/calendar" class="mb-3 text-lg md:text-xl">Calendar</a></li>
+                    -->
+                </ul>
+            </nav>
+        <div class="card border-bold m-1 rounded">
+            <div class="card-image"><img src="/static/img/Image1.png" alt="Image"></div>
+            <div class="card-content">
+                <h2>DGC Cultural Kick-Off</h2>
+            <p>Vibrant celebration of diversity, food, and performnace! Provided by organizations of the Diversified Greek Council!</p>
+            </div>
+            <div class="card-buttons">
+                <button>Accept</button><button>Decline</button><button>Edit</button>
+            </div>
+        </div>
+        <div class="card border-bold m-1 rounded">
+            <div class="card-image"><img src="/static/img/Image1.png" alt="Image"></div>
+            <div class="card-content">
+                <h2>DGC Cultural Kick-Off</h2>
+            <p>Vibrant celebration of diversity, food, and performnace! Provided by organizations of the Diversified Greek Council!</p>
+            </div>
+            <div class="card-buttons">
+                <button>Accept</button><button>Decline</button><button>Edit</button>
+            </div>
+        </div>
+        <div id="calendar" class="hidden">
+            <script src="{{ url_for('static', filename='calendar.js') }}"></script>
+            <div>
+                <button onclick="prevMonth()">Prev Month</button>
+                <button onclick="nextMonth()">Next Month</button>
+            </div>
+        </div>
+    </div>
+    
+</section>
+{% endblock %}

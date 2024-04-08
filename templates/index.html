@@ -1,16 +1,42 @@
 {% extends '_layout.html' %}
-<!--Implement the index.css file-->
+
 {% block title %}Home Page{% endblock %}
+{%  block head_script %}{% endblock %}
 
-{% block body %}
-<div id="header">
-    <h1 class="text-3xl font-bold underline">
-        Hello world!
-    </h1>
+{% block main %}
+<!-- Custom Login Form -->
+<div>
+    <h2>login with your email</h2>
+    <form action="/login_manual" method="post">
+        <div>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+        </div>
+        <div>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        <button type="submit">Login</button>
+    </form>
+</div>
 
-    <nav>
-        <a href="/calendar" class="mb-3 text-lg md:text-xl ">To Calendar</a>
-        <a href="/profile">To Profile</a>
-    </nav>
+<!-- Registration Link -->
+
+<!-- Google Sign In -->
+<div>
+    <a href='/login'><button>Sign in with Google</button></a>
+</div>
+
+
+<div>
+    <a href="/registration">Register</a>
+</div>
+
+<div>
+    <a href="/calendar">Calendar</a>
+</div>
+
+<div>
+    <a href="/profile">Profile</a>
 </div>
 {% endblock %}
