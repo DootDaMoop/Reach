@@ -85,7 +85,7 @@ def callback():
     session["first_and_last"] = id_info.get("name")
 
     user.update_from_session(session)
-    return redirect("/protected_area")
+    return redirect("/home")
 
 @app.get("/logout")
 def logout():
@@ -143,7 +143,7 @@ def login_manual():
         session["first_and_last"] = None
         user.update_from_session(session)
 
-        return redirect("/protected_area")
+        return redirect("/home")
     else:
         return "Invalid email or password. Please try again.", 400
 
@@ -151,10 +151,10 @@ def login_manual():
 
 
 #the page you land after you log in 
-@app.get("/protected_area")
+@app.get("/home")
 @login_is_required
-def protected_area():
-    return f"Hello {user.first_name}! <br/> <a href='/logout'><button>Logout</button></a>"
+def home():
+    return render_template("home.html")
 
 
 if __name__ == "__main__":
