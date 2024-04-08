@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS "user" (
     user_email      VARCHAR(255) NOT NULL,
     user_first_name VARCHAR(255),
     user_last_name  VARCHAR(255),
+    google_id       VARCHAR(255) UNIQUE,
     PRIMARY KEY (user_id)
 );
 

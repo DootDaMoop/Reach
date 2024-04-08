@@ -128,7 +128,7 @@ def register():
     if not password == confirm_password:
         return "Passwords do not match. Please try again.", 400
     
-    success, message = user_repo.register_user(username, email, password, first_name, last_name)
+    success, message = user_repo.register_user(username, email, password, first_name, last_name, None)
 
     if success:
         return redirect('/')
