@@ -92,7 +92,7 @@ def callback():
     
     user = user_repo.get_user_from_username(id_info.get("name"))
     session['user_id'] = user['user_id']
-    return redirect("/protected_area")
+    return redirect("/home")
 
 @app.get("/logout")
 def logout():
@@ -156,15 +156,16 @@ def login_manual():
         session["google_id"] = None
         session["first_and_last"] = f"{user['user_first_name']} {user['user_last_name']}"
 
-        return redirect("/protected_area")
+        return redirect("/home")
     else:
         return "Invalid email or password. Please try again.", 400
 
 #the page you land after you log in 
-@app.get("/protected_area")
+@app.get("/home")
 @login_is_required
-def protected_area():
-    return f"Hello {session['first_name']}! <br/> <a href='/logout'><button>Logout</button></a>"
+def home():
+    #return f"Hello {session['first_name']}! <br/> <a href='/logout'><button>Logout</button></a>"
+    return render_template("home.html")
 
 
 if __name__ == "__main__":
