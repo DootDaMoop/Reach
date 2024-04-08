@@ -9,13 +9,16 @@ from pip._vendor import cachecontrol
 import google.auth.transport.requests
 from model.User import User
 from user_repo.User_management import User_management
-#FLASK_DEBUG=true flask run
+from dotenv import load_dotenv
+from repositories.user_repo import get_all_users_for_table
+from repositories import user_repo
+
+load_dotenv()
 
 app = Flask(__name__)
 
 user = User()
 user_management = User_management(r"user_repo\users.csv")
-
 
 with open("client_secrets.json", 'r') as file:
     config = json.load(file)
@@ -44,7 +47,7 @@ flow = Flow.from_client_secrets_file(
 
 def login_is_required(function):
     def wrapper(*args, **kwargs):
-        if "google_id" not in session:
+        if 'user_id' not in session:
             return abort(401)  # Authorization required
         else:
             return function()
@@ -95,6 +98,8 @@ def logout():
 
 @app.get("/")
 def index():
+    all_users = get_all_users_for_table()
+    print(all_users)
     return render_template('index.html')
 
 
@@ -109,6 +114,7 @@ def calendar():
 
 @app.post('/register')
 def register():
+    username = request.form['username']
     email = request.form['email']
     password = request.form['password']
     confirm_password = request.form['confirm_password']
@@ -116,13 +122,11 @@ def register():
     last_name = request.form['last_name']
 
     if not password == confirm_password:
-
         return "Passwords do not match. Please try again.", 400
     
-    success, message = user_management.register_user(email, password, first_name, last_name)
+    success, message = user_repo.register_user(username, email, password, first_name, last_name)
 
     if success:
-        user.update_from_registration(email, password, first_name, last_name)
         return redirect('/')
     else:
         return message, 400
@@ -131,30 +135,32 @@ def register():
 
 @app.post('/login_manual')
 def login_manual():
+    username = request.form['username']
+    email = request.form['email']
+    password = request.form['password']
 
-    user_exists, valid = user_management.validate_user(request.form["email"], request.form["password"])    
+    validated = user_repo.validate_user(username, email, password)
 
-    if user_exists:
-        session["email"] = request.form["email"]
-        session["first_name"] = user_management.get_first_name_from_email(request.form["email"])
-        session["last_name"] = user_management.get_last_name_from_email(request.form["email"])
+    if validated:
+        user = user_repo.get_user_from_username(username)
+
+        session['user_id'] = user['user_id']
+        session["email"] = user['user_email']
+        session["first_name"] = user['user_first_name']
+        session["last_name"] = user['user_last_name']
         session["pfp"] = None
         session["google_id"] = None
-        session["first_and_last"] = None
-        user.update_from_session(session)
+        session["first_and_last"] = f"{user['user_first_name']} {user['user_last_name']}"
 
         return redirect("/protected_area")
     else:
         return "Invalid email or password. Please try again.", 400
 
-
-
-
 #the page you land after you log in 
 @app.get("/protected_area")
 @login_is_required
 def protected_area():
-    return f"Hello {user.first_name}! <br/> <a href='/logout'><button>Logout</button></a>"
+    return f"Hello {session['first_name']}! <br/> <a href='/logout'><button>Logout</button></a>"
 
 
 if __name__ == "__main__":

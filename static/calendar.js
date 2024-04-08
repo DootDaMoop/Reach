@@ -19,7 +19,7 @@ function renderCalendar(year, month) {
     let dayCounter = 0;
     const prevMonthLastDay = new Date(year, month, 0).getDate();
 
-    for(let i = 0; i <42; i++) {
+    for(let i = 0; i < 42; i++) {
         if(i < startingDayOfWeek) {
             const prevMonthDay = prevMonthLastDay - startingDayOfWeek + i + 1;
             calendarHTML.push(`<td class="calendar-day prev-month-calendar-day" onclick="prevMonth()">${prevMonthDay}</td>`);
