@@ -10,8 +10,7 @@ import google.auth.transport.requests
 from model.User import User
 from user_repo.User_management import User_management
 from dotenv import load_dotenv
-from repositories.user_repo import get_all_users_for_table
-from repositories import user_repo
+from repositories import user_repo, group_repo, event_repo
 
 load_dotenv()
 
@@ -20,7 +19,7 @@ app = Flask(__name__)
 # user = User()
 # user_management = User_management(r"user_repo\users.csv")
 
-with open("client_secrets.json", 'r') as file:
+with open('client_secrets.json', 'r') as file:
     config = json.load(file)
 
     client_id = config['web']['client_id']
@@ -33,15 +32,15 @@ with open("client_secrets.json", 'r') as file:
 
 app.secret_key = client_secret
 
-os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
+os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 GOOGLE_CLIENT_ID = client_id
-client_secrets_file = os.path.join(pathlib.Path(__file__).parent, "client_secrets.json")
+client_secrets_file = os.path.join(pathlib.Path(__file__).parent, 'client_secrets.json')
 
 flow = Flow.from_client_secrets_file(
     client_secrets_file=client_secrets_file,
-    scopes=["https://www.googleapis.com/auth/userinfo.profile", "https://www.googleapis.com/auth/userinfo.email", "openid"],
-    redirect_uri="http://127.0.0.1:5000/callback"
+    scopes=['https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/userinfo.email', 'openid'],
+    redirect_uri='http://127.0.0.1:5000/callback'
 )
 
 
@@ -55,18 +54,18 @@ def login_is_required(function):
     return wrapper
 
 
-@app.get("/google_login")
+@app.get('/google_login')
 def google_login():
     authorization_url, state = flow.authorization_url()
-    session["state"] = state
+    session['state'] = state
     return redirect(authorization_url)
 
 
-@app.get("/callback")
+@app.get('/callback')
 def callback():
     flow.fetch_token(authorization_response=request.url)
 
-    if not session["state"] == request.args["state"]:
+    if not session['state'] == request.args['state']:
         abort(500)  # State does not match!
 
     credentials = flow.credentials
@@ -80,30 +79,29 @@ def callback():
         audience=GOOGLE_CLIENT_ID
     )
     
-    session["first_name"] = id_info.get("given_name")
-    session["last_name"] = id_info.get("family_name")
-    session["email"] = id_info.get("email")
-    session["pfp"] = id_info.get("picture")
-    session["google_id"] = id_info.get("sub")
-    session["first_and_last"] = id_info.get("name")
+    session['first_name'] = id_info.get('given_name')
+    session['last_name'] = id_info.get('family_name')
+    session['email'] = id_info.get('email')
+    session['pfp'] = id_info.get('picture')
+    session['google_id'] = id_info.get('sub')
+    session['user_name'] = id_info.get('name')
 
-    if not user_repo.user_exists(id_info.get("name")):
-        user_repo.register_user(id_info.get("name"), id_info.get("email"), None, id_info.get("given_name"),id_info.get("family_name"), id_info.get("sub"))
+    if not user_repo.user_exists(id_info.get('name')):
+        user_repo.register_user(id_info.get('name'), id_info.get('email'), None, id_info.get('given_name'),id_info.get('family_name'), id_info.get('sub'))
     
-    user = user_repo.get_user_from_username(id_info.get("name"))
+    user = user_repo.get_user_from_username(id_info.get('name'))
     session['user_id'] = user['user_id']
-    return redirect("/home")
+    return redirect('/home')
 
-@app.get("/logout")
+# TODO: If you want to log out, just localhost://logout in your url, implement logout button on homepage later.
+@app.get('/logout')
 def logout():
     session.clear()
-    return redirect("/")
+    return redirect('/')
 
 
-@app.get("/")
+@app.get('/')
 def index():
-    all_users = get_all_users_for_table()
-    print(all_users)
     return render_template('index.html')
 
 
@@ -126,7 +124,7 @@ def register():
     last_name = request.form['last_name']
 
     if not password == confirm_password:
-        return "Passwords do not match. Please try again.", 400
+        return 'Passwords do not match. Please try again.', 400
     
     success, message = user_repo.register_user(username, email, password, first_name, last_name, None)
 
@@ -149,24 +147,48 @@ def login_manual():
         user = user_repo.get_user_from_username(username)
 
         session['user_id'] = user['user_id']
-        session["email"] = user['user_email']
-        session["first_name"] = user['user_first_name']
-        session["last_name"] = user['user_last_name']
-        session["pfp"] = None
-        session["google_id"] = None
-        session["first_and_last"] = f"{user['user_first_name']} {user['user_last_name']}"
+        session['email'] = user['user_email']
+        session['first_name'] = user['user_first_name']
+        session['last_name'] = user['user_last_name']
+        session['pfp'] = None
+        session['google_id'] = None
+        session['user_name'] = user['user_name']
 
-        return redirect("/home")
+        return redirect('/home')
     else:
-        return "Invalid email or password. Please try again.", 400
+        return 'Invalid email or password. Please try again.', 400
 
 #the page you land after you log in 
-@app.get("/home")
+@app.get('/home')
 @login_is_required
 def home():
-    #return f"Hello {session['first_name']}! <br/> <a href='/logout'><button>Logout</button></a>"
-    return render_template("home.html")
+    cur_user_groups = group_repo.get_user_groups_from_user_id(session['user_id'])
+    return render_template("home.html", cur_user_groups=cur_user_groups)
 
+@app.get('/groups/create/')
+def get_create_group_page():
+    return render_template('create_group.html')
+
+@app.post('/groups/create/')
+def create_group_page():
+    group_name = request.form.get('group_name')
+    group_description = request.form.get('group_description')
+    group_public = request.form.get('is_group_public')
+
+    if group_name is None or group_description is None:
+        return 'Invalid Group Name or Group Description', 400
+
+    if group_public is not None:
+        group_public = True
+    else:
+        group_public = False
+
+    success, message = group_repo.create_group(session['user_id'], group_name, group_description, group_public)
+    
+    if success:
+        return redirect('/home')
+    else:
+        return message, 400
 
 if __name__ == "__main__":
     app.run(debug=True)
