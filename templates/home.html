@@ -8,11 +8,10 @@
     <div class="main-header"><h1>Community Feed:</h1></div>
     <div class="sidebar">
         <ul>
-            <li><button>UNCC Game Dev</button></li>
-            <li><button>Lambda Phi Epsilon</button></li>
-            <li><button>ITSC 3155</button></li>
-            <li><button>PNNMB Trumpets</button></li>
-
+            <form action="/groups/create" method="get"><li><button type="submit">Create Group</button></li></form>
+            {% for groups in cur_user_groups %}
+                <li><button>{{ groups['group_name'] }}</button></li>
+            {% endfor %}
         </ul>
     </div>
 
@@ -21,10 +20,6 @@
                 <ul>
                     <li id="activate-event"class="active mb-3 text-lg md:text-xl">Events</li>
                     <li id="activate-calendar" class="mb-3 text-lg md:text-xl">Calendar</li>
-                    <!-- 
-                    <li class="active"><a href="/" class="mb-3 text-lg md:text-xl">Events</a></li>
-                    <li class="inactive"><a href="/calendar" class="mb-3 text-lg md:text-xl">Calendar</a></li>
-                    -->
                 </ul>
             </nav>
         <div class="card border-bold m-1 rounded">
