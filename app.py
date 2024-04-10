@@ -11,6 +11,7 @@ from model.User import User
 from user_repo.User_management import User_management
 from dotenv import load_dotenv
 from repositories import user_repo, group_repo, event_repo
+from functools import wraps
 
 load_dotenv()
 
@@ -45,6 +46,7 @@ flow = Flow.from_client_secrets_file(
 
 
 def login_is_required(function):
+    @wraps(function)
     def wrapper(*args, **kwargs):
         if 'user_id' not in session:
             return abort(401)  # Authorization required
@@ -166,6 +168,7 @@ def home():
     return render_template("home.html", cur_user_groups=cur_user_groups)
 
 @app.get('/groups/create/')
+@login_is_required
 def get_create_group_page():
     return render_template('create_group.html')
 
