@@ -156,6 +156,11 @@ def login_manual():
 def home():
     return render_template("home.html")
 
+#the page if you click on a group
+@app.get("/group")
+def group():
+    return render_template("group.html")
+
 
 if __name__ == "__main__":
     app.run(debug=True)
