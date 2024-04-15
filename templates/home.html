@@ -7,15 +7,12 @@
     <div class="main-header"><h1>My Groups:</h1></div>
     <div class="main-header"><h1>Community Feed:</h1></div>
     <div class="sidebar">
-        <form action='/group' method="get">
-            <ul>
-                <li><button name="group" value="IDENTIFIER OF GROUP IN DB">UNCC Game Dev</button></li>
-                <li><button name="group" value="IDENTIFIER OF GROUP IN DB">Lambda Phi Epsilon</button></li>
-                <li><button name="group" value="IDENTIFIER OF GROUP IN DB">ITSC 3155</button></li>
-                <li><button name="group" value="IDENTIFIER OF GROUP IN DB">PNNMB Trumpets</button></li>
-
-            </ul>
-        </form>
+        <ul>
+            <form action="/groups/create" method="get"><li><button type="submit">Create Group</button></li></form>
+            {% for groups in cur_user_groups %}
+                <li><button>{{ groups['group_name'] }}</button></li>
+            {% endfor %}
+        </ul>
     </div>
 
     <div class="feed bg-white">

@@ -1,6 +1,6 @@
 {% extends '_layout.html' %}
 
-{% block title %}Home Page{% endblock %}
+{% block title %}Login Page{% endblock %}
 {%  block head_script %}{% endblock %}
 
 {% block main %}
@@ -8,6 +8,10 @@
 <div>
     <h2>login with your email</h2>
     <form action="/login_manual" method="post">
+        <div>
+            <label for="username">Username:</label>
+            <input type="username" id="username" name="username" required>
+        </div>
         <div>
             <label for="email">Email:</label>
             <input type="email" id="email" name="email" required>
@@ -24,7 +28,7 @@
 
 <!-- Google Sign In -->
 <div>
-    <a href='/login'><button>Sign in with Google</button></a>
+    <a href='/google_login'><button>Sign in with Google</button></a>
 </div>
 
 
