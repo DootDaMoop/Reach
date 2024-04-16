@@ -112,10 +112,13 @@ def edit_user(user_id: int, username: str, email: str, password: str | None, fir
                             user_name = %s,
                             user_email = %s,
                             user_password = %s,
-                            first_name = %s,
-                            last_name = %s
+                            user_first_name = %s,
+                            user_last_name = %s
                         WHERE user_id = %s;
                         ''', [username, email, password, first_name, last_name, user_id])
+            cur.execute(''' 
+                        SELECT * FROM "user" WHERE user_id = %s
+                        ''', [user_id])
             user = cur.fetchone()
             if user is None:
                 return None
