@@ -78,7 +78,8 @@ def callback():
     id_info = id_token.verify_oauth2_token(
         id_token=credentials._id_token,
         request=token_request,
-        audience=GOOGLE_CLIENT_ID
+        audience=GOOGLE_CLIENT_ID,
+        clock_skew_in_seconds=300
     )
     
     session['first_name'] = id_info.get('given_name')
@@ -158,11 +159,7 @@ def login_manual():
 
         return redirect('/home')
     else:
-<<<<<<< HEAD
-        return "Invalid email or password. Please try again.", 400
-=======
         return 'Invalid email or password. Please try again.', 400
->>>>>>> main
 
 #the page you land after you log in 
 @app.get('/home')
@@ -171,28 +168,25 @@ def home():
     cur_user_groups = group_repo.get_user_groups_from_user_id(session['user_id'])
     return render_template("home.html", cur_user_groups=cur_user_groups)
 
-<<<<<<< HEAD
-@app.get('/profile')
-def profile():
-    full_name = user.first_name + ' ' + user.last_name
-    return render_template('profile.html', user=user, full_name=full_name)
+@app.get('/profile/<int:user_id>')
+def profile(user_id: int):
+    user = user_repo.get_user_from_user_id(user_id)
+    return render_template('profile.html', user=user)
 
-#@app.get('/edit')
-#def profile():
-#    user.first_name = request.form.get('first_name')
-#    user.last_name = request.form.get('last_name')
-#    full_name = user.first_name + ' ' + user.last_name
+@app.get('/profile/<int:user_id>/edit')
+def get_edit_user_profile_page(user_id: int):
+    if session['user_id'] == user_id:
+        user = user_repo.get_user_from_user_id(session['user_id'])
+        return render_template('edit_profile.html', user=user)
+    else:
+        return 'Unauthorized Access', 401
 
-#    user.username = request.form.get('username')
-#    user.password = request.form.get('password')
-#    user.email = request.form.get('email')
+@app.post('/profile/<user_id>/edit')
+def edit_user_profile(user_id: int):
+    user = group_repo.get_user_groups_from_user_id(session['user_id'])
+    new_user = group_repo.edit_user(user['user_id'], request.form.get('username'), request.form.get('email'), request.form.get('password'), request.form.get('first_name'), request.form.get('last_name'))
+    return redirect('profile/<new_user[user_id]>', user=new_user)
 
-#    user.snapchat = request.form.get('snapchat')
-#    user.instagram = request.form.get('instagram')
-
-#    return render_template('eidt_profile.html', user=user, full_name=full_name)
-
-=======
 @app.get('/groups/create/')
 @login_is_required
 def get_create_group_page():
@@ -218,7 +212,6 @@ def create_group_page():
         return redirect('/home')
     else:
         return message, 400
->>>>>>> main
 
 if __name__ == "__main__":
     app.run(debug=True)

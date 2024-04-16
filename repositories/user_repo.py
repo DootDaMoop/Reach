@@ -83,3 +83,40 @@ def get_user_from_username(username: str) -> dict[str, Any] | None:
             if user is None:
                 return None
             return user
+        
+def get_user_from_user_id(user_id: int) -> dict[str, Any] | None:
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=dict_row) as cur:
+            cur.execute('''
+                        SELECT
+                            *
+                        FROM
+                            "user"
+                        WHERE user_id = %s
+                        ''', [user_id])
+            user = cur.fetchone()
+            if user is None:
+                return None
+            return user
+
+def edit_user(user_id: int, username: str, email: str, password: str | None, first_name: str | None, last_name: str | None) -> dict[str, Any]:
+    #make password optional if user has a google id
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=dict_row) as cur:
+            cur.execute('''
+                        UPDATE
+                            "user"
+                        SET
+                            user_name = %s,
+                            user_email = %s,
+                            user_password = %s,
+                            first_name = %s,
+                            last_name = %s
+                        WHERE user_id = %s;
+                        ''', [username, email, password, first_name, last_name, user_id])
+            user = cur.fetchone()
+            if user is None:
+                return None
+            return user

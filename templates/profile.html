@@ -10,24 +10,25 @@
 {% block main %}
 <main>
     <h1 class="text-3xl font-bold">Profile</h1>
-    <div id="edit-button">
-        <a href="edit_profile.html">
-            <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">Edit</button>
-        </a>
-    </div>
     <div id="profile-info">
         <ul style="list-style-type:none;">
             <li><img src="" alt=""></li>
-            <li>Username: {{  user.username }}</li>
-            <li>Password: {{  user.password  }}</li>
+            <li>Username: {{  user['user_name'] }}</li>
             <br>
-            <li>Name: {{  full_name  }}</li>
-            <li>Email: {{  user.email  }}</li>
+            <li>Name: {{  user['user_first_name']  }}</li>
+            <li>Email: {{  user['user_email']  }}</li>
             <br>
-            <li>Instagram: {{  user.instagram  }}</li>
-            <li>Snapchat: {{  user.snapchat  }}</li>
+            <li>Instagram: </li>
+            <li>Snapchat: </li>
         </ul> 
     </div>
+    {% if session['user_id'] == user['user_id'] %}
+        <div id="edit-button">
+            <a href="/profile/{{ user['user_id'] }}/edit">
+                <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">Edit</button>
+            </a>
+        </div>
+    {% endif %}
 </main>
 
 {% endblock %}
