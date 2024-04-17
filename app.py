@@ -164,13 +164,16 @@ def login_manual():
 @app.get('/home')
 @login_is_required
 def home():
-    cur_user_groups = group_repo.get_user_groups_from_user_id(session['user_id'])
-    return render_template("home.html", cur_user_groups=cur_user_groups)
+    groups = group_repo.get_user_groups_from_user_id(session['user_id'])
+    return render_template("home.html", groups=groups)
 
 #the page if you click on a group
-@app.get("/groups")
-def group():
-    return render_template("group.html")
+@app.get("/groups/<group_id>/")
+def group(group_id:str):
+    group = group_repo.get_user_group_from_group_id(group_id)
+    sidebar_groups = group_repo.get_user_groups_from_user_id(session['user_id'])
+    users_name = session['user_name']
+    return render_template("group.html", group=group, sidebar_groups=sidebar_groups, users_name=users_name)
 
 @app.get('/groups/create/')
 @login_is_required
