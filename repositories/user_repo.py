@@ -32,14 +32,14 @@ def is_valid_email(email: str) -> bool:
         return bool(re.match(email_regex, email))
 
 def validate_user(username: str, email: str, password: str) -> bool:
-    if user_exists(username):
+    if user_exists(username, email):
         user = get_user_from_username(username)
         if bcrypt.checkpw(password.encode('utf-8'), user['user_password'].encode('utf-8')) and is_valid_email(email):
             return True, "User authenticated successfully."
     else:
         return False, "Invalid username, email, or password."
 
-def user_exists(username: str) -> bool:
+def user_exists(username: str, email: str) -> bool:
     pool = get_pool()
     with pool.connection() as conn:
         with conn.cursor(row_factory=dict_row) as cur:
@@ -48,8 +48,8 @@ def user_exists(username: str) -> bool:
                                 user_id
                             FROM
                                 "user"
-                            WHERE user_name = %s
-                            ''', [username])
+                            WHERE user_name = %s OR user_email = %s
+                            ''', [username, email])
             user = cur.fetchone()
             return user is not None
 
@@ -58,7 +58,7 @@ def register_user(username: str, email: str, password: str, first_name: str, las
     """Register a new user if the email is valid and not already taken."""
     if not is_valid_email(email):
         return False, {"error": "Invalid email format."}
-    if user_exists(username):
+    if user_exists(username, email):
         return False, {"error": "User already exists."}
     hashed_password = hash_value(password) if password is not None else None
     hashed_google_id = hash_value(google_id) if google_id else None
@@ -100,7 +100,6 @@ def get_user_from_username(username: str) -> dict[str, Any] | None:
         
 
 def get_user_from_user_id(user_id: int) -> dict[str, Any] | None:
-
     pool = get_pool()
     with pool.connection() as conn:
         with conn.cursor(row_factory=dict_row) as cur:
@@ -111,6 +110,22 @@ def get_user_from_user_id(user_id: int) -> dict[str, Any] | None:
                             "user"
                         WHERE user_id = %s
                         ''', [user_id])
+            user = cur.fetchone()
+            if user is None:
+                return None
+            return user
+
+def get_user_from_user_email(email: str) -> dict[str, Any] | None:
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=dict_row) as cur:
+            cur.execute('''
+                        SELECT
+                            *
+                        FROM
+                            "user"
+                        WHERE user_email = %s
+                        ''', [email])
             user = cur.fetchone()
             if user is None:
                 return None

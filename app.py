@@ -89,10 +89,10 @@ def callback():
     session['google_id'] = id_info.get('sub')
     session['user_name'] = id_info.get('name')
 
-    if not user_repo.user_exists(id_info.get('name')):
+    if not user_repo.user_exists(id_info.get('name'), id_info.get('email')):
         user_repo.register_user(id_info.get('name'), id_info.get('email'), None, id_info.get('given_name'),id_info.get('family_name'), id_info.get('sub'))
     
-    user = user_repo.get_user_from_username(id_info.get('name'))
+    user = user_repo.get_user_from_user_email(id_info.get('email'))
     session['user_id'] = user['user_id']
     return redirect('/home')
 
