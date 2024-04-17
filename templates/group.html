@@ -10,11 +10,9 @@
     <div class="sidebar">
         <form action='/group' method="get">
             <ul>
-                <li><button name="group" value="IDENTIFIER OF GROUP IN DB">UNCC Game Dev</button></li>
-                <li><button name="group" value="IDENTIFIER OF GROUP IN DB">Lambda Phi Epsilon</button></li>
-                <li><button name="group" value="IDENTIFIER OF GROUP IN DB">ITSC 3155</button></li>
-                <li><button name="group" value="IDENTIFIER OF GROUP IN DB">PNNMB Trumpets</button></li>
-
+                {% for sidebar_group in sidebar_groups %}
+                    <a href="/groups/{{ sidebar_group['group_id'] }}"><li>{{ sidebar_group['group_name'] }}</li></a>
+                {% endfor %}
             </ul>
         </form>
     </div>
@@ -23,7 +21,7 @@
         <div class="group-prf-card">
             <div class="group-img card-image"><img src="/static/img/35322171_8_1sasa11.jpg"></div>
             <div class="group-info">
-                <h1>OWNER</h1>
+                <h1>{{ users_name }}</h1>
                 <p>MEMBER COUNT</p>
                 <p>USER ROLE</p>
             </div>
