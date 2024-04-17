@@ -1,0 +1,28 @@
+{% extends '_layout.html' %}
+
+{% block title %}Create Group{% endblock %}
+{%  block head_script %}<link rel="stylesheet" href="/static/edit.css">{% endblock %}
+
+{% block main %}
+
+<div class="group-edit-card">
+    <div class="group-image"></div>
+    <div class="group-info">
+        <h2>Lambda Phi Epsilon International Fraternity Inc. <i class="fa-solid fa-pen-to-square"></i></h2>
+        <p>Privacy: Private <i class="fa-solid fa-pen-to-square"></i></p>
+        <p class="">About: A Lambda is the epitome of dedication and commitment, dedication to the pursiot of noble purpose and commitment to the five; wisdom, love, cultural heritage, courage leadership, and authenticity. A Lambda man focuses his sight not on the destination, for the worth is found in experiancing the journey. With his brothers he lights the way, to shape the world as he envisions. He is a Lambda, a leader among men. <i class="fa-solid fa-pen-to-square"></i></p>
+    </div>
+</div>
+<div class="member-list">
+    <h1>Members: </h1>
+    {% for member in members %}
+    <div class="member">
+        <img src="" alt="profile icon">
+        <p>Role:</p>
+        <p>Options:</p>
+    </div>
+    {% endfor %}
+</div>
+
+
+{% endblock %}
