@@ -1,5 +1,6 @@
 CREATE DATABASE jacd_swe_final;
 
+-- TABLE CREATION
 CREATE TABLE IF NOT EXISTS "user" (
     user_id         SERIAL,
     user_name       VARCHAR(255) NOT NULL,
@@ -57,7 +58,28 @@ CREATE TABLE IF NOT EXISTS collaboration (
     FOREIGN KEY (group_id) REFERENCES "group"(group_id),
     FOREIGN KEY (event_id) REFERENCES event(event_id)
 );
+-- END OF TABLE CREATION
+-- TRIGGERS AND FUNCTIONS
 
+-- END OF TRIGGERS AND FUNCTION
+create or replace function update_on_membership()
+returns trigger as
+$update_on_membership$
+begin
+    insert into membership(user_id, group_id, user_role)
+    values (NEW.user_id, NEW.group_id, 0);
+    return NEW;
+end;
+$update_on_membership$
+language plpgsql;
+
+create or replace trigger update_membership
+after insert
+    on "group"
+for each row execute
+    function update_on_membership();
+-- END OF TRIGGERS AND FUNCTIONS
+-- INSERTIONS
 INSERT INTO "user" (user_name, user_password, user_email) VALUES
     ('Dom', 'dom123', 'dom@gmail.com'),
     ('Jason', 'jason123', 'jason@gmail.com'),
@@ -69,19 +91,7 @@ INSERT INTO "group" (user_id, group_name, group_description, group_public) VALUE
     (2, 'ITCS 3155', 'SOFTWARE ENGINEERING AHHHHH', TRUE),
     (1, 'Bahamon Fan Club', 'a', FALSE);
 
-INSERT INTO event (user_id, group_id, event_name, event_description, event_public, event_start_timestamp, event_end_timestamp) VALUES
-    (1, 1, 'Birthday Bash', 'WOOO BIRTHDAY!!!', TRUE , '2024-06-23 00:00:00', '2024-06-24 00:00:00');
+INSERT INTO event (user_id, group_id, event_name, event_description, event_public, event_start_timestamp, event_end_timestamp)
+VALUES (1, 1, 'Birthday Bash', 'WOOO BIRTHDAY!!!', TRUE , '2024-06-23 00:00:00', '2024-06-24 00:00:00');
 
-SELECT * FROM "user";
-
-SELECT * FROM "group";
-
-SELECT * FROM event;
-
-SELECT event_id FROM event WHERE event_name = 'Birthday Bash';
-
-SELECT group_id FROM "group" WHERE group_name = 'ITCS 2181';
-
-DROP TABLE event CASCADE;
-
-DROP DATABASE jacd_swe_final;
+-- END OF INSERTIONS
