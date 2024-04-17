@@ -9,8 +9,8 @@
     <div class="sidebar">
         <ul>
             <form action="/groups/create" method="get"><li><button type="submit">Create Group</button></li></form>
-            {% for groups in cur_user_groups %}
-                <li><button>{{ groups['group_name'] }}</button></li>
+            {% for group in groups %}
+                <a href="/groups/{{ group['group_id'] }}"><li>{{ group['group_name'] }}</li></a>
             {% endfor %}
         </ul>
     </div>
