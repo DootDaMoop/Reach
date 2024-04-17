@@ -8,7 +8,7 @@ from google_auth_oauthlib.flow import Flow
 from pip._vendor import cachecontrol
 import google.auth.transport.requests
 from model.User import User
-from user_repo.User_management import User_management
+#from user_repo.User_management import User_management
 from dotenv import load_dotenv
 from repositories import user_repo, group_repo, event_repo
 from functools import wraps
@@ -78,7 +78,8 @@ def callback():
     id_info = id_token.verify_oauth2_token(
         id_token=credentials._id_token,
         request=token_request,
-        audience=GOOGLE_CLIENT_ID
+        audience=GOOGLE_CLIENT_ID,
+        clock_skew_in_seconds=300
     )
     
     session['first_name'] = id_info.get('given_name')
