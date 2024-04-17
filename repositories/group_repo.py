@@ -22,7 +22,7 @@ def get_user_groups_from_user_id(user_id: str) -> dict[str: Any]:
         with conn.cursor(row_factory=dict_row) as cursor:
             cursor.execute('''
                             SELECT
-                                group_name
+                                group_name, group_id
                             FROM
                                 "group"
                             WHERE
@@ -50,6 +50,34 @@ def create_group(user_id: str, group_name: str, group_description: str, group_pu
                 'group_id': group_id,
                 'group_name': group_name
             }
+            
+def get_user_group_from_group_id(group_id: str):
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=dict_row) as cursor:
+            cursor.execute('''
+                            SELECT
+                                *
+                            FROM
+                                "group"
+                            WHERE
+                                group_id = %s
+                            ''', [group_id])
+            return cursor.fetchone()
+        
+def get_member_count_from_group_id(group_id: str):
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=dict_row) as cursor:
+            cursor.execute('''
+                            SELECT
+                                *
+                            FROM
+                                membership
+                            WHERE
+                                group_id = %s
+                            ''', [group_id])
+            return cursor.fetchone()
 
 # TODO: Update group details
 
