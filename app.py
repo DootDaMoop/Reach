@@ -185,7 +185,7 @@ def get_edit_user_profile_page(user_id: int):
 def edit_user_profile(user_id: int):
     user = user_repo.get_user_from_user_id(session['user_id'])
     new_user = user_repo.edit_user(user['user_id'], request.form.get('username'), request.form.get('email'), request.form.get('password'), request.form.get('first_name'), request.form.get('last_name'))
-    return redirect('/profile/<user[user_id]>')
+    return redirect(f"/profile/{user_id}")
 
 @app.get('/groups/create/')
 @login_is_required
