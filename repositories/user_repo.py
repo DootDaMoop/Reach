@@ -164,3 +164,17 @@ def check_if_user_id_is_using_google_account(user_id: int) -> Tuple[bool, Dict[s
         else:
             return False, {'message': 'User is not linked to a Google account.'}
     return False, {'error': 'User does not exist.'}
+
+def user_name_exists(username: str, email: str) -> bool:
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=dict_row) as cur:
+            cur.execute('''
+                            SELECT
+                                user_id
+                            FROM
+                                "user"
+                            WHERE user_name = %s OR user_email = %s
+                            ''', [username, email])
+            user = cur.fetchone()
+            return user is not None
