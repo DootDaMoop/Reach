@@ -1,10 +1,21 @@
 from repositories.db import get_pool
 from psycopg.rows import dict_row
-from typing import Any
+from typing import Tuple, Union, Dict, Any
 import re
+import bcrypt
+
 
 # Regular expression for validating an Email
 email_regex = re.compile(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b')
+
+def hash_value(value: str) -> str:
+    if value is None:
+        return None
+    return bcrypt.hashpw(value.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
+
+def check_password_against_hash(password: str, hashed_password: str) -> bool:
+    return bcrypt.checkpw(password.encode('utf-8'), hashed_password.encode('utf-8'))
 
 def get_all_users_for_table():
     pool = get_pool()
@@ -23,13 +34,12 @@ def is_valid_email(email: str) -> bool:
 def validate_user(username: str, email: str, password: str) -> bool:
     if user_exists(username):
         user = get_user_from_username(username)
-        if password == user['user_password'] and is_valid_email(email):
+        if bcrypt.checkpw(password.encode('utf-8'), user['user_password'].encode('utf-8')) and is_valid_email(email):
             return True, "User authenticated successfully."
     else:
         return False, "Invalid username, email, or password."
 
 def user_exists(username: str) -> bool:
-    """Check if the user already exists."""
     pool = get_pool()
     with pool.connection() as conn:
         with conn.cursor(row_factory=dict_row) as cur:
@@ -43,29 +53,33 @@ def user_exists(username: str) -> bool:
             user = cur.fetchone()
             return user is not None
 
-def register_user(username: str, email: str, password: str, first_name: str, last_name: str, google_id: str | None) -> dict[str, Any]:
+
+def register_user(username: str, email: str, password: str, first_name: str, last_name: str, google_id: Union[str, None]) -> Tuple[bool, Dict[str, Any]]:
     """Register a new user if the email is valid and not already taken."""
     if not is_valid_email(email):
-        return False, "Invalid email format."
+        return False, {"error": "Invalid email format."}
     if user_exists(username):
-        return False, "User already exists."
-    
-    # creates and registers the new user
+        return False, {"error": "User already exists."}
+    hashed_password = hash_value(password) if password is not None else None
+    hashed_google_id = hash_value(google_id) if google_id else None
     pool = get_pool()
     with pool.connection() as conn:
         with conn.cursor(row_factory=dict_row) as cur:
             cur.execute('''
-                        INSERT INTO "user" (user_name, user_password, user_email, user_first_name, user_last_name, google_id)
-                        VALUES (%s, %s, %s, %s, %s, %s)
-                        RETURNING user_id
-                        ''', [username, password, email, first_name, last_name, google_id])
+                INSERT INTO "user" 
+                (user_name, user_password, user_email, user_first_name, user_last_name, google_id) 
+                VALUES (%s, %s, %s, %s, %s, %s) 
+                RETURNING user_id
+                ''', [username, hashed_password, email, first_name, last_name, hashed_google_id])
             user_id = cur.fetchone()
             if user_id is None:
-                raise Exception('Failed to create user.')
-            return {
-                'user_id': user_id,
+                return False, {"error": "Failed to create user."}
+            return True, {
+                'user_id': user_id['user_id'],
                 'username': username
             }
+
+
 
 # Can use as singleton
 def get_user_from_username(username: str) -> dict[str, Any] | None:
@@ -84,7 +98,9 @@ def get_user_from_username(username: str) -> dict[str, Any] | None:
                 return None
             return user
         
+
 def get_user_from_user_id(user_id: int) -> dict[str, Any] | None:
+
     pool = get_pool()
     with pool.connection() as conn:
         with conn.cursor(row_factory=dict_row) as cur:
@@ -123,3 +139,13 @@ def edit_user(user_id: int, username: str, email: str, password: str | None, fir
             if user is None:
                 return None
             return user
+            return user      
+
+def check_if_user_id_is_using_google_account(user_id: int) -> Tuple[bool, Dict[str, Any]]:
+    user = get_user_from_user_id(user_id)
+    if user:
+        if user.get('google_id'):
+            return True, {'message': 'User is linked to a Google account.', 'google_id': user['google_id']}
+        else:
+            return False, {'message': 'User is not linked to a Google account.'}
+    return False, {'error': 'User does not exist.'}
