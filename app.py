@@ -164,16 +164,27 @@ def login_manual():
 @app.get('/home')
 @login_is_required
 def home():
-    groups = group_repo.get_user_groups_from_user_id(session['user_id'])
+    groups = group_repo.get_groups_from_user_id(session['user_id']) # This is wrong because this will only list groups that the user OWNS
+    print(groups)
     return render_template("home.html", groups=groups)
 
 #the page if you click on a group
 @app.get("/groups/<group_id>/")
 def group(group_id:str):
-    group = group_repo.get_user_group_from_group_id(group_id)
-    sidebar_groups = group_repo.get_user_groups_from_user_id(session['user_id'])
-    users_name = session['user_name']
-    return render_template("group.html", group=group, sidebar_groups=sidebar_groups, users_name=users_name)
+    group = group_repo.get_user_group_from_group_id(group_id) # indiviudal group instance of selected element
+    member_count = group_repo.get_member_count_from_group_id(group_id) # selcted group's member count
+    group_owner = group_repo.get_group_and_user_from_group_and_user_id(session['user_id'], group_id) # returns joint table between user-membership-group 
+    membership = group_repo.get_role_in_group_from_user_and_group_id(session['user_id'], group_id) # Get user's role in group
+    
+    
+    # Everything above this comment is information for the indvidual selected group
+    sidebar_groups = group_repo.get_groups_from_user_id(session['user_id'])
+    return render_template("group.html", group=group, sidebar_groups=sidebar_groups, group_owner=group_owner, member_count = member_count, membership=membership)
+
+@app.get("/groups/<group_id>/group_edit/")
+def edit(group_id: str):
+    return render_template("group_edit.html")
+    
 
 @app.get('/groups/create/')
 @login_is_required

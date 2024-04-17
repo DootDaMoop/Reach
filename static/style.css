@@ -144,13 +144,15 @@ nav ul li {
 }
 .group-options {
     display: flex;
-    justify-content: space-evenly;
+    justify-content: flex-end;
+    gap: 5px;
 }
 .group-options button {
     background: rgb(145, 145, 145);
     /*border: solid 1px;*/
     width: 80px;
     border-radius: 10px;
+    margin: 4px;
 }
 .group-prf-card .leave { /*Leave button*/
     background-color: red;
