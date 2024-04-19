@@ -17,16 +17,13 @@ def event_exists(event_name: str) -> bool:
             return group is not None
 
 def create_event(user_id: str, group_id: str, event_name:str, event_description: str, event_public: bool, event_start_timestamp: str, event_end_timestamp: str) -> dict[str: Any]:
-    #if event_exists(event_name):
-    #    return False, "Group already exists."
-
     # creates and registers the new group
     pool = get_pool()
     with pool.connection() as conn:
         with conn.cursor(row_factory=dict_row) as cur:
             cur.execute('''
                         INSERT INTO event (user_id, group_id, event_name, event_description, event_public, event_start_timestamp, event_end_timestamp)
-                        VALUES (%s, %s, %s, %s)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s)
                         RETURNING group_id
                         ''', [user_id, group_id, event_name, event_description, event_public, event_start_timestamp, event_end_timestamp])
             event_id = cur.fetchone()

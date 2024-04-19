@@ -136,8 +136,6 @@ def register():
     else:
         return message, 400
 
-    
-
 @app.post('/login_manual')
 def login_manual():
     username = request.form['username']
@@ -170,8 +168,8 @@ def home():
     return render_template("home.html", groups=groups)
 
 #the page if you click on a group
-@app.get("/groups/<group_id>/")
-def group(group_id:str):
+@app.get("/groups/<int:group_id>/")
+def group(group_id: int):
     group = group_repo.get_user_group_from_group_id(group_id) # indiviudal group instance of selected element
     member_count = group_repo.get_member_count_from_group_id(group_id) # selcted group's member count
     group_owner = group_repo.get_group_and_user_from_group_and_user_id(session['user_id'], group_id) # returns joint table between user-membership-group 
@@ -182,10 +180,24 @@ def group(group_id:str):
     sidebar_groups = group_repo.get_groups_from_user_id(session['user_id'])
     return render_template("group.html", group=group, sidebar_groups=sidebar_groups, group_owner=group_owner, member_count = member_count, membership=membership)
 
-@app.get("/groups/<group_id>/group_edit/")
-def edit(group_id: str):
+@app.get("/groups/<int:group_id>/group_edit/")
+def get_edit_group_page(group_id: int):
     return render_template("group_edit.html")
-    
+
+@app.get("/groups/<int:group_id>/create_event/")
+def get_create_event_page(group_id:int):
+    group = group_repo.get_user_group_from_group_id(group_id)
+    return render_template("create_event.html", group=group)
+
+@app.post("/groups/<int:group_id>/create_event/")
+def create_event_for_selected_group(group_id: int):
+    event_name = request.form.get('event_name')
+    event_description = request.form.get('event_description')
+    event_public = request.form.get('is_event_public')
+    event_start_date = request.form.get('event_start_date')
+    event_end_date = request.form.get('event_end_date')
+    event_repo.create_event(session['user_id'],group_id, event_name, event_description, event_public, event_start_date, event_end_date)
+    return redirect(f'/groups/{group_id}/')
 
 @app.get('/profile/<int:user_id>')
 def profile(user_id: int):
@@ -200,7 +212,7 @@ def get_edit_user_profile_page(user_id: int):
     else:
         return 'Unauthorized Access', 401
 
-@app.post('/profile/<user_id>/edit')
+@app.post('/profile/<int:user_id>/edit')
 def edit_user_profile(user_id: int):
     user = user_repo.get_user_from_user_id(session['user_id'])
     new_user = user_repo.edit_user(user['user_id'], request.form.get('username'), request.form.get('email'), request.form.get('password'), request.form.get('first_name'), request.form.get('last_name'))
