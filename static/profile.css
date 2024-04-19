@@ -1,0 +1,27 @@
+main
+{
+    padding-left: 60px;
+}
+
+#profile-info
+{
+    padding-left: 20px;
+}
+
+li :first-of-type
+{
+    padding-top: 5px;
+}
+
+li
+{
+    padding-bottom: 10px;
+}
+
+#edit-button
+{
+    padding-top: 20px;
+    float: right;
+    padding-right: 200px;
+
+}
