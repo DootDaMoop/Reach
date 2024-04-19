@@ -1,0 +1,23 @@
+/*Reset and General Styles*/
+* {
+    margin:0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.group-edit-card {
+    border: solid 1px;
+    margin: 10px;
+    display: flex;
+    background-color: blue;
+}
+
+.group-image {
+    flex-grow: 1;
+    background-color: aquamarine;
+}
+
+.group-info {
+    flex-grow: 2;
+    background-color: aqua;
+}
