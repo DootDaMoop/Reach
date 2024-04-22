@@ -6,21 +6,21 @@
 {% block main %}
 <!-- Custom Login Form -->
 <div>
-    <h2>login with your email</h2>
-    <form action="/login_manual" method="post">
+    <h2 class="text-3xl font-bold">Login with Email</h2>
+    <form action="/login_manual" method="post" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
         <div>
-            <label for="username">Username:</label>
+            <label for="username" class="block text-gray-700 text-sm font-bold mb-2">Username:</label>
             <input type="username" id="username" name="username" required>
         </div>
         <div>
-            <label for="email">Email:</label>
+            <label for="email" class="block text-gray-700 text-sm font-bold mb-2">Email:</label>
             <input type="email" id="email" name="email" required>
         </div>
         <div>
-            <label for="password">Password:</label>
+            <label for="password" class="block text-gray-700 text-sm font-bold mb-2">Password:</label>
             <input type="password" id="password" name="password" required>
         </div>
-        <button type="submit">Login</button>
+        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Login</button>
     </form>
 </div>
 
@@ -28,15 +28,15 @@
 
 <!-- Google Sign In -->
 <div>
-    <a href='/google_login'><button>Sign in with Google</button></a>
+    <a href='/google_login' class="ml-4"><button>Sign in with Google</button></a>
 </div>
 
 
 <div>
-    <a href="/registration">Register</a>
+    <a href="/registration" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center mb-4 mt-4 ml-4">Register</a>
 </div>
 
 <div>
-    <a href="/calendar">Calendar</a>
+    <a href="/calendar" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center mb-4 ml-4">Calendar</a>
 </div>
 {% endblock %}
