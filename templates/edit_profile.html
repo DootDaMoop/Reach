@@ -8,39 +8,39 @@
 
 {% block main %}
 <!--ADD FORM ACTION-->
-<h1>Edit Profile</h1>
+<h1 class="text-xl font-bold tracking-tight text-gray-900 p-6">Edit Profile</h1>
 <div id="profile-info">
-    <form action="/profile/{{  user['user_id']  }}/edit" method="POST">
-        <label for="profile_picture">Profile Picture</label>
+    <form action="/profile/{{  user['user_id']  }}/edit" method="POST" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <label for="profile_picture" class="block text-gray-700 text-sm font-bold mb-2">Profile Picture</label>
         <input type="file" name="profile_picture" id="profile_picture" value="">
         <br>
         <br>
 
         <h3>Login Information</h3>
-        <label for="username">Username</label>
-        <input type="text" id="username" name="username" value="{{  user['user_name']  }}">
+        <label for="username" class="block text-gray-700 text-sm font-bold mb-2">Username</label>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" id="username" name="username" value="{{  user['user_name']  }}">
         <br>
 
-        <label for="password">Password</label>
-        <input type="text" id="password" name="password" value="{{  user['password']  }}">
+        <label for="password" class="block text-gray-700 text-sm font-bold mb-2">Password</label>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" id="password" name="password" value="{{  user['password']  }}">
         <br>
 
-        <label for="email">Email</label>
-        <input type= "email" id="email" name="email" value="{{  user['user_email']  }}">
+        <label for="email" class="block text-gray-700 text-sm font-bold mb-2">Email</label>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type= "email" id="email" name="email" value="{{  user['user_email']  }}">
         <br>
         <br>
 
         <h3>Personal Information</h3>
-        <label for="first_name">First Name (Optional)</label>
-        <input type="text" id="first_name" name="first_name" value="{{  user['user_first_name']  }}">
+        <label for="first_name" class="block text-gray-700 text-sm font-bold mb-2">First Name (Optional)</label>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" id="first_name" name="first_name" value="{{  user['user_first_name']  }}">
         <br>
 
-        <label for="last_name">Last Name (Optional)</label>
-        <input type="text" id="last_name" name="last_name" value="{{  user['user_last_name']  }}">
+        <label for="last_name" class="block text-gray-700 text-sm font-bold mb-2">Last Name (Optional)</label>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" id="last_name" name="last_name" value="{{  user['user_last_name']  }}">
         <br>
         <br>
 
-        <input type="submit" value="Save">
+        <input class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit" value="Save">
     </form>
 </div>
 {% endblock %}
