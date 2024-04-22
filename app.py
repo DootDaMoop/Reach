@@ -2,7 +2,7 @@ import os
 import pathlib
 import requests
 import json
-from flask import Flask, session, abort, redirect, request, render_template
+from flask import Flask, session, abort, redirect, request, render_template, url_for
 from google.oauth2 import id_token
 from google_auth_oauthlib.flow import Flow
 from pip._vendor import cachecontrol
@@ -164,39 +164,48 @@ def login_manual():
 @login_is_required
 def home():
     groups = group_repo.get_groups_from_user_id(session['user_id']) # This is wrong because this will only list groups that the user OWNS
-    print(groups)
-    return render_template("home.html", groups=groups)
+    home_events = event_repo.get_all_user_group_events(session['user_id'])
+    return render_template("home.html", groups=groups, home_events=home_events)
 
 #the page if you click on a group
-@app.get("/groups/<int:group_id>/")
+@app.get('/groups/<int:group_id>/')
 def group(group_id: int):
     group = group_repo.get_user_group_from_group_id(group_id) # indiviudal group instance of selected element
     member_count = group_repo.get_member_count_from_group_id(group_id) # selcted group's member count
     group_owner = group_repo.get_group_and_user_from_group_and_user_id(session['user_id'], group_id) # returns joint table between user-membership-group 
     membership = group_repo.get_role_in_group_from_user_and_group_id(session['user_id'], group_id) # Get user's role in group
-    
+    group_events = event_repo.get_all_user_group_events_for_selected_group(session['user_id'], group_id) # Gets all events from group that user has been pending(invited) to.
     
     # Everything above this comment is information for the indvidual selected group
     sidebar_groups = group_repo.get_groups_from_user_id(session['user_id'])
-    return render_template("group.html", group=group, sidebar_groups=sidebar_groups, group_owner=group_owner, member_count = member_count, membership=membership)
+    return render_template('group.html', group=group, sidebar_groups=sidebar_groups, group_owner=group_owner, member_count = member_count, membership=membership, group_events=group_events)
 
-@app.get("/groups/<int:group_id>/group_edit/")
+@app.get('/groups/<int:group_id>/group_edit/')
 def get_edit_group_page(group_id: int):
-    return render_template("group_edit.html")
+    return render_template('group_edit.html')
 
-@app.get("/groups/<int:group_id>/create_event/")
+@app.get('/groups/<int:group_id>/create_event/')
 def get_create_event_page(group_id:int):
     group = group_repo.get_user_group_from_group_id(group_id)
-    return render_template("create_event.html", group=group)
+    return render_template('create_event.html', group=group)
 
-@app.post("/groups/<int:group_id>/create_event/")
+@app.post('/groups/<int:group_id>/create_event/')
 def create_event_for_selected_group(group_id: int):
-    event_name = request.form.get('event_name')
-    event_description = request.form.get('event_description')
-    event_public = request.form.get('is_event_public')
-    event_start_date = request.form.get('event_start_date')
+    event_name = request.form.get('event_name'),
+    event_description = request.form.get('event_description'),
+    event_public = request.form.get('is_event_public'),
+    event_start_date = request.form.get('event_start_date'),
     event_end_date = request.form.get('event_end_date')
-    event_repo.create_event(session['user_id'],group_id, event_name, event_description, event_public, event_start_date, event_end_date)
+    
+    if any(value is None or value == '' for value in [event_name, event_description, event_public, event_start_date, event_end_date]):
+        return redirect(url_for('get_create_event_page', group_id=group_id)) # TODO: Error Message!
+
+    event = event_repo.create_event(session['user_id'],group_id, event_name, event_description, event_public, event_start_date, event_end_date)
+
+    # If an event is public then all the users in a group will be invited.
+    if event['event_public']:
+        event_repo.invite_all_users_in_group_to_event(group_id, event['event_id'])
+
     return redirect(f'/groups/{group_id}/')
 
 @app.get('/profile/<int:user_id>')

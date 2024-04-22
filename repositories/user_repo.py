@@ -154,7 +154,6 @@ def edit_user(user_id: int, username: str, email: str, password: str | None, fir
             if user is None:
                 return None
             return user
-            return user      
 
 def check_if_user_id_is_using_google_account(user_id: int) -> Tuple[bool, Dict[str, Any]]:
     user = get_user_from_user_id(user_id)

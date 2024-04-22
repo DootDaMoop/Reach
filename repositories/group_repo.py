@@ -50,7 +50,7 @@ def create_group(user_id: str, group_name: str, group_description: str, group_pu
                 'group_id': group_id,
                 'group_name': group_name
             }
-            
+
 def get_user_group_from_group_id(group_id: str):
     pool = get_pool()
     with pool.connection() as conn:
@@ -64,7 +64,7 @@ def get_user_group_from_group_id(group_id: str):
                                 group_id = %s
                             ''', [group_id])
             return cursor.fetchone()
-        
+
 def get_member_count_from_group_id(group_id: str):
     pool = get_pool()
     with pool.connection() as conn:
@@ -78,7 +78,7 @@ def get_member_count_from_group_id(group_id: str):
                                 group_id = %s
                             ''', [group_id])
             return cursor.fetchone()[0]
-        
+
 def get_role_in_group_from_user_and_group_id(user_id: str, group_id: str):
     pool = get_pool()
     with pool.connection() as conn:
@@ -109,7 +109,8 @@ def get_groups_from_user_id(user_id: str): # This returns all groups a user is a
                             WHERE 
                                 usr.user_id = %s;
                             ''', [user_id])
-            return cursor.fetchall() 
+            return cursor.fetchall()
+
 def get_group_and_user_from_group_and_user_id(user_id: str, group_id: str):
     pool = get_pool()
     with pool.connection() as conn:
@@ -126,9 +127,22 @@ def get_group_and_user_from_group_and_user_id(user_id: str, group_id: str):
                             WHERE 
                                 usr.user_id = %s and user_group.group_id = %s;
                             ''', [user_id, group_id])
-            return cursor.fetchone() 
+            return cursor.fetchone()
 
-        
+# Returns all members from a group using group_id
+def get_all_members_from_group_id(group_id: int):
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=dict_row) as cursor:
+            cursor.execute('''
+                            SELECT 
+                                user_id
+                            FROM 
+                                membership
+                            WHERE 
+                                group_id = %s;
+                            ''', [group_id])
+            return cursor.fetchall()
 
 # TODO: Update group details
 

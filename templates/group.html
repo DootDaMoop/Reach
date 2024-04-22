@@ -35,8 +35,8 @@
 
             </div>
             <div class="group-options">
-                <button><a href="/groups/{{group.group_id}}/create_event/">Add Event</a></button>
-                <button><a href="/groups/{{ group.group_id }}/group_edit/">Edit</a></button>
+                <button><a href="/groups/{{ group['group_id'] }}/create_event/">Add Event</a></button>
+                <button><a href="/groups/{{ group['group_id'] }}/group_edit/">Edit</a></button>
                 <button>Message</button>
                 <button class="leave">Leave</button>
             </div>
@@ -48,13 +48,25 @@
                 <li id="activate-calendar" class="mb-3 text-lg md:text-xl">Calendar</li>
             </ul>
         </nav>
+        {% for event in group_events %}
+        <div class="card border-bold rounded">
+            <div class="card-image"><img src="/static/img/Image1.png" alt="Image"></div>
+            <div class="card-content">
+                <h2>{{ event['event_name'] }}</h2>
+            <p>{{ event['event_description'] }}</p>
+            </div>
+            <div class="card-buttons">
+                <button>Accept</button><button>Decline</button><button>Edit</button>
+            </div>
+        </div>
+        {% endfor %}
+
         <div id="calendar" class="hidden">
             <script src="{{ url_for('static', filename='calendar.js') }}"></script>
             <div>
                 <button onclick="prevMonth()">Prev Month</button>
                 <button onclick="nextMonth()">Next Month</button>
             </div>
-            
         </div>
     </div>
     
