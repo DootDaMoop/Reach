@@ -1,28 +1,48 @@
 {% extends '_layout.html' %}
 
 {% block title %}Create Group{% endblock %}
-{%  block head_script %}<link rel="stylesheet" href="/static/edit.css">{% endblock %}
+{%  block head_script %}
+<link rel="stylesheet" href="/static/edit.css">
+<script src="/static/group_edit.js" defer></script>
+{% endblock %}
 
 {% block main %}
+<div class="kick-confirm hidden">Do you wish to kick this user?
+    
+    <div class="confirm-buttons">
+        <button class="confirm-button confirm">Confirm</button>
+        <button class="confirm-button cancel">Cancel</button>
+    </div>
+</div>
 
-<div class="group-edit-card">
-    <div class="group-image"></div>
+<div class="group-edit-card shadow-lg">
+    <div class="group-image-container"><img src="/static/img/SPECTRAL.webp" alt="OOGA BOOGA" class="group-image"></div>
     <div class="group-info">
-        <h2>Lambda Phi Epsilon International Fraternity Inc. <i class="fa-solid fa-pen-to-square"></i></h2>
-        <p>Privacy: Private <i class="fa-solid fa-pen-to-square"></i></p>
-        <p class="">About: A Lambda is the epitome of dedication and commitment, dedication to the pursiot of noble purpose and commitment to the five; wisdom, love, cultural heritage, courage leadership, and authenticity. A Lambda man focuses his sight not on the destination, for the worth is found in experiancing the journey. With his brothers he lights the way, to shape the world as he envisions. He is a Lambda, a leader among men. <i class="fa-solid fa-pen-to-square"></i></p>
+        <h2>Lambda Phi Epsilon International Fraternity Inc. <i class="fa-solid fa-pen-to-square edit-icon"></i></h2>
+        <p>Privacy: Private <i class="fa-solid fa-pen-to-square edit-icon"></i></p>
+        <p class="">About: A Lambda is the epitome of dedication and commitment, dedication to the pursiot of noble purpose and commitment to the five; wisdom, love, cultural heritage, courage leadership, and authenticity. A Lambda man focuses his sight not on the destination, for the worth is found in experiancing the journey. With his brothers he lights the way, to shape the world as he envisions. He is a Lambda, a leader among men. <i class="fa-solid fa-pen-to-square edit-icon"></i></p>
     </div>
 </div>
 <div class="member-list">
-    <h1>Members: </h1>
+    <h1 class="mx-4">Members: </h1>
     {% for member in members %}
     <div class="member">
         <img src="" alt="profile icon">
-        <p>Role:</p>
-        <p>Options:</p>
+        <p class="w-25">{{ member.user_name }}</p>
+        <p>Role: {{ member.user_role }}</p>
+        <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa-solid fa-ellipsis"></i></button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" > Profile</a>
+                    <a class="dropdown-item" > Role</a>
+                    <a class="dropdown-item kick-user" > Kick</a>
+                </div>
+                
+        </div>
     </div>
     {% endfor %}
 </div>
 
 
 {% endblock %}
+

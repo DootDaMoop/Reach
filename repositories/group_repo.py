@@ -128,7 +128,23 @@ def get_group_and_user_from_group_and_user_id(user_id: str, group_id: str):
                             ''', [user_id, group_id])
             return cursor.fetchone() 
 
-        
+def get_members_from_group_id(group_id: str):
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=dict_row) as cursor:
+            cursor.execute('''
+                            SELECT 
+                                *
+                            FROM 
+                                "user" u1
+                            JOIN 
+                                membership on u1.user_id = membership.user_id
+                            JOIN 
+                                "group" g1 on g1.group_id = membership.group_id
+                            WHERE 
+                                g1.group_id = %s;
+                            ''', [group_id])
+            return cursor.fetchall() 
 
 # TODO: Update group details
 
