@@ -89,10 +89,10 @@ def callback():
     session['google_id'] = id_info.get('sub')
     session['user_name'] = id_info.get('name')
 
-    if not user_repo.user_exists(id_info.get('name')):
+    if not user_repo.user_exists(id_info.get('name'), id_info.get('email')):
         user_repo.register_user(id_info.get('name'), id_info.get('email'), None, id_info.get('given_name'),id_info.get('family_name'), id_info.get('sub'))
     
-    user = user_repo.get_user_from_username(id_info.get('name'))
+    user = user_repo.get_user_from_user_email(id_info.get('email'))
     session['user_id'] = user['user_id']
     return redirect('/home')
 
@@ -187,6 +187,25 @@ def edit(group_id: str):
     members = group_repo.get_members_from_group_id(group_id)
     return render_template("group_edit.html", members=members)
     
+
+@app.get('/profile/<int:user_id>')
+def profile(user_id: int):
+    user = user_repo.get_user_from_user_id(user_id)
+    return render_template('profile.html', user=user)
+
+@app.get('/profile/<int:user_id>/edit')
+def get_edit_user_profile_page(user_id: int):
+    if session['user_id'] == user_id:
+        user = user_repo.get_user_from_user_id(session['user_id'])
+        return render_template('edit_profile.html', user=user)
+    else:
+        return 'Unauthorized Access', 401
+
+@app.post('/profile/<user_id>/edit')
+def edit_user_profile(user_id: int):
+    user = user_repo.get_user_from_user_id(session['user_id'])
+    new_user = user_repo.edit_user(user['user_id'], request.form.get('username'), request.form.get('email'), request.form.get('password'), request.form.get('first_name'), request.form.get('last_name'))
+    return redirect(f"/profile/{user_id}")
 
 @app.get('/groups/create/')
 @login_is_required

@@ -19,7 +19,7 @@
             <ul>
                 <li><a href="/home">Home</a></li>
                 <li><a href="/">Find Groups</a></li>
-                
+                <li><a href="/profile/{{ session['user_id'] }}">Profile</a></li>
             </ul>
         </header>
     <main>{% block main %}{% endblock %}</main>
