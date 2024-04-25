@@ -184,7 +184,8 @@ def group(group_id:str):
 
 @app.get("/groups/<group_id>/group_edit/")
 def edit(group_id: str):
-    return render_template("group_edit.html")
+    members = group_repo.get_members_from_group_id(group_id)
+    return render_template("group_edit.html", members=members)
     
 
 @app.get('/groups/create/')
