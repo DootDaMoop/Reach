@@ -30,7 +30,6 @@
 
 
 .form-wrapper {
-    /* Styles for the wrapper element (layout, margins, padding) */
     margin: 20px auto;
     padding: 15px;
     border: 1px solid #ddd;
@@ -38,14 +37,12 @@
   }
   
   .form-wrapper label {
-    /* Styles for labels */
     display: block;
     margin-bottom: 5px;
   }
   
   .form-wrapper input[type="text"],
   .form-wrapper textarea {
-    /* Styles for input fields and textarea */
     width: 100%;
     padding: 10px;
     border: 1px solid #ccc;
@@ -53,7 +50,6 @@
   }
   
   .form-wrapper input[type="submit"] {
-    /* Styles for submit button */
     background-color: #4CAF50;
     color: white;
     padding: 10px 20px;
