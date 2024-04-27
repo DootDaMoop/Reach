@@ -165,3 +165,20 @@ def check_if_user_id_is_using_google_account(user_id: int) -> Tuple[bool, Dict[s
             return False, {'message': 'User is not linked to a Google account.'}
     return False, {'error': 'User does not exist.'}
 
+def get_user_role_by_group_id(user_id: str, group_id: str):
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=dict_row) as cursor:
+            cursor.execute('''
+                SELECT 
+                    user_role
+                FROM 
+                    membership
+                WHERE 
+                    user_id = %s AND group_id = %s;
+            ''', [user_id, group_id])
+            result = cursor.fetchone()
+            if result:
+                return result['user_role']
+            else:
+                return "User role not found in this group."

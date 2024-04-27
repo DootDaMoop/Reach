@@ -182,10 +182,19 @@ def group(group_id:str):
     sidebar_groups = group_repo.get_groups_from_user_id(session['user_id'])
     return render_template("group.html", group=group, sidebar_groups=sidebar_groups, group_owner=group_owner, member_count = member_count, membership=membership)
 
-@app.get("/groups/<group_id>/group_edit/")
+@app.route("/groups/<group_id>/group_edit/", methods=['GET', 'POST'])
 def edit(group_id: str):
-    return render_template("group_edit.html")
+    group_name = group_repo.get_group_name_by_id(group_id)
+    status = group_repo.get_group_public_status(group_id)
+    description = group_repo.get_group_description_by_id(group_id)
+    members = group_repo.get_members_and_roles(group_id)
     
+    new_group_name = group_repo.update_group_name(group_id, request.form.get('group_name'))
+    new_status = group_repo.update_group_status(group_id, True if request.form.get('privacy') == "on" else False)
+    new_description = group_repo.update_group_description(group_id, request.form.get('description'))
+    
+    return render_template("group_edit.html", description=description, group_name=group_name, status=status, members=members, group_id=group_id)
+
 
 @app.get('/profile/<int:user_id>')
 def profile(user_id: int):

@@ -5,24 +5,46 @@
 
 {% block main %}
 
-<div class="group-edit-card">
-    <div class="group-image"></div>
-    <div class="group-info">
-        <h2>Lambda Phi Epsilon International Fraternity Inc. <i class="fa-solid fa-pen-to-square"></i></h2>
-        <p>Privacy: Private <i class="fa-solid fa-pen-to-square"></i></p>
-        <p class="">About: A Lambda is the epitome of dedication and commitment, dedication to the pursiot of noble purpose and commitment to the five; wisdom, love, cultural heritage, courage leadership, and authenticity. A Lambda man focuses his sight not on the destination, for the worth is found in experiancing the journey. With his brothers he lights the way, to shape the world as he envisions. He is a Lambda, a leader among men. <i class="fa-solid fa-pen-to-square"></i></p>
+<divclass="form-wrapper">
+    <div class="group-edit-card">
+        <div class="group-image"></div>
+            <div class="group-info">
+                <form method="post" action="/groups/{{ group_id }}/group_edit/">
+                    <label for="name">Name:</label>
+                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" id="group_name" name="group_name" value="{{  group_name  }}">
+                    
+                    
+                    <label for="privacy">Public:</label>
+                    <input type="checkbox" id="privacy" name="privacy" {{ 'checked' if status else '' }}>
+                    
+                    
+                    <p for="description">Description:</p>
+                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" id="description" name="description" value="{{  description  }}">
+                    
+                    <input class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit" value="Save">
+                </form>
+            </div>
+    </div>
+    <div class="member-list">
+        <h1>Members:</h1>
+        {% for member in members %}
+        <div class="member">
+            <!--
+            <img src="/path/to/default/profile_icon.png" alt="profile icon">
+            -->
+            <p>Name: {{ member.user_name }}</p>
+            <p>Role: {{ member.user_role }}</p>
+            <p>Options: <button>Edit</button> <button>Remove</button></p>
+        </div>
+        {% endfor %}
     </div>
 </div>
-<div class="member-list">
-    <h1>Members: </h1>
-    {% for member in members %}
-    <div class="member">
-        <img src="" alt="profile icon">
-        <p>Role:</p>
-        <p>Options:</p>
-    </div>
-    {% endfor %}
-</div>
-
 
 {% endblock %}
+
+
+
+
+
+
+
