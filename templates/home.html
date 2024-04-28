@@ -8,7 +8,7 @@
     <div class="main-header"><h1>Community Feed:</h1></div>
     <div class="sidebar">
         <ul>
-            <form action="/groups/create" method="get"><li><button type="submit">Create Group</button></li></form>
+            <form action="/groups/create" method="get"><li><button type="submit">Create Group <i class="fa-solid fa-plus"></i></button></li></form>
             {% for group in groups %}
                 <a href="/groups/{{ group['group_id'] }}"><li>{{ group['group_name'] }}</li></a>
             {% endfor %}

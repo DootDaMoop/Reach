@@ -176,8 +176,17 @@ def group(group_id: int):
 def get_edit_group_page(group_id: int):
     if group_repo.get_role_in_group_from_user_and_group_id(session['user_id'], group_id)['user_role'] != (0 and 1):
         return redirect(url_for('get_edit_group_page', group_id=group_id))
+
+    group_name = group_repo.get_group_name_by_id(group_id)
+    status = group_repo.get_group_public_status(group_id)
+    description = group_repo.get_group_description_by_id(group_id)
+    members = group_repo.get_members_and_roles(group_id)
     
-    return render_template('group_edit.html')
+    new_group_name = group_repo.update_group_name(group_id, request.form.get('group_name'))
+    new_status = group_repo.update_group_status(group_id, True if request.form.get('privacy') == "on" else False)
+    new_description = group_repo.update_group_description(group_id, request.form.get('description'))
+    
+    return render_template("group_edit.html", description=description, group_name=group_name, status=status, members=members, group_id=group_id)
 
 @app.get('/groups/<int:group_id>/create_event/')
 def get_create_event_page(group_id:int):
