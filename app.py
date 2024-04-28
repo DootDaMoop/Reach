@@ -7,8 +7,6 @@ from google.oauth2 import id_token
 from google_auth_oauthlib.flow import Flow
 from pip._vendor import cachecontrol
 import google.auth.transport.requests
-from model.User import User
-#from user_repo.User_management import User_management
 from dotenv import load_dotenv
 from repositories import user_repo, group_repo, event_repo
 from functools import wraps
