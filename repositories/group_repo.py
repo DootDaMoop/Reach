@@ -109,7 +109,8 @@ def get_groups_from_user_id(user_id: str): # This returns all groups a user is a
                             WHERE 
                                 usr.user_id = %s;
                             ''', [user_id])
-            return cursor.fetchall() 
+            return cursor.fetchall()
+        
 def get_group_and_user_from_group_and_user_id(user_id: str, group_id: str):
     pool = get_pool()
     with pool.connection() as conn:
@@ -127,6 +128,152 @@ def get_group_and_user_from_group_and_user_id(user_id: str, group_id: str):
                                 usr.user_id = %s and user_group.group_id = %s;
                             ''', [user_id, group_id])
             return cursor.fetchone() 
+        
+def get_group_by_id(group_id: str) -> dict:
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=dict_row) as cursor:
+            cursor.execute('''
+                            SELECT
+                                *
+                            FROM
+                                "group"
+                            WHERE
+                                group_id = %s
+                            ''', [group_id])
+            return cursor.fetchone()
+
+
+
+def get_group_description_by_id(group_id: str) -> str:
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute('''
+                            SELECT
+                                group_description
+                            FROM
+                                "group"
+                            WHERE
+                                group_id = %s
+                            ''', [group_id])
+            description = cursor.fetchone()
+            if description:
+                return description[0]
+            else:
+                return "Group description not found."
+            
+
+
+def get_group_public_status(group_id: str) -> bool:
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute('''
+                            SELECT
+                                group_public
+                            FROM
+                                "group"
+                            WHERE
+                                group_id = %s
+                            ''', [group_id])
+            result = cursor.fetchone()
+            if result is not None:
+                return result[0]  # Assuming 'group_public' is the first column returned
+            else:
+                raise ValueError("Group not found with the specified ID")
+            
+
+
+
+def get_group_name_by_id(group_id: str) -> str:
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute('''
+                            SELECT
+                                group_name
+                            FROM
+                                "group"
+                            WHERE
+                                group_id = %s
+                            ''', [group_id])
+            result = cursor.fetchone()
+            if result:
+                return result[0]  # Assuming 'group_name' is the first column returned
+            else:
+                return "No group found with this ID."
+            
+
+
+
+def get_members_and_roles(group_id: str):
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=dict_row) as cursor:
+            cursor.execute('''
+                SELECT 
+                    usr.user_name, mem.user_role
+                FROM 
+                    "user" usr
+                JOIN 
+                    membership mem ON usr.user_id = mem.user_id
+                WHERE 
+                    mem.group_id = %s;
+            ''', [group_id])
+            members = cursor.fetchall()
+            if members:
+                return members
+            else:
+                return "No members found for this group."
+
+
+
+
+def update_group_description(group_id: str, new_description: str):
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute('''
+                UPDATE "group"
+                SET group_description = %s
+                WHERE group_id = %s;
+            ''', [new_description, group_id])
+            conn.commit()
+            return cursor.rowcount > 0 
+
+
+def update_group_name(group_id: str, new_name: str = None):
+
+    if not new_name:
+        return True  
+
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute('''
+                UPDATE "group"
+                SET group_name = %s
+                WHERE group_id = %s;
+            ''', [new_name, group_id])
+            conn.commit()
+            return cursor.rowcount > 0  # Returns True if at least one row was updated
+
+
+
+def update_group_status(group_id: str, new_status: bool):
+
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute('''
+                UPDATE "group"
+                SET group_public = %s
+                WHERE group_id = %s;
+            ''', [new_status, group_id])
+            conn.commit()
+            return cursor.rowcount > 0  # Returns True if at least one row was updated
+
 
 def get_members_from_group_id(group_id: str):
     pool = get_pool()
@@ -148,10 +295,41 @@ def get_members_from_group_id(group_id: str):
 
 # TODO: Update group details
 
+
 # TODO: Delete a group
+
 
 # TODO: Add Member
 
+
+
 # TODO: Remove Member
+def remove_member_from_group(user_id: str, group_id: str) -> bool:
+
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute('''
+                DELETE FROM membership
+                WHERE user_id = %s AND group_id = %s;
+            ''', [user_id, group_id])
+            conn.commit()
+            return cursor.rowcount > 0  # Returns True if at least one row was affected
+
+
+
 
 # TODO: Change a Member's role (owner, admin, member)
+def change_member_role(user_id: str, group_id: str, new_role: str) -> bool:
+
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute('''
+                UPDATE membership
+                SET user_role = %s
+                WHERE user_id = %s AND group_id = %s;
+            ''', [new_role, user_id, group_id])
+            conn.commit()
+            return cursor.rowcount > 0  # Returns True if at least one row was updated
+
