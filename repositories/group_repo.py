@@ -85,14 +85,14 @@ def get_role_in_group_from_user_and_group_id(user_id: str, group_id: str):
         with conn.cursor(row_factory=dict_row) as cursor:
             cursor.execute('''
                             SELECT
-                                *
+                                user_role
                             FROM
                                 membership
                             WHERE
                                 user_id = %s and group_id = %s
                             ''', [user_id, group_id])
             return cursor.fetchone()
-        
+
 def get_groups_from_user_id(user_id: str): # This returns all groups a user is a part of, in comparison to turning in groups a user is owner of
     pool = get_pool()
     with pool.connection() as conn:

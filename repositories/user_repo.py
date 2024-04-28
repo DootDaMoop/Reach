@@ -79,8 +79,6 @@ def register_user(username: str, email: str, password: str, first_name: str, las
                 'username': username
             }
 
-
-
 # Can use as singleton
 def get_user_from_username(username: str) -> dict[str, Any] | None:
     pool = get_pool()

@@ -25,12 +25,22 @@
         {% for event in home_events %}
         <div class="card border-bold rounded">
             <div class="card-image"><img src="/static/img/Image1.png" alt="Image"></div>
-            <div class="card-content">
-                <h2>{{event['event_name']}}</h2>
-            <p>{{event['event_description']}}</p>
-            </div>
+                <div class="card-content">
+                    <h2>{{event['event_name']}}</h2>
+                    <p>{{event['event_description']}}</p>
+                    <p>Start Date: {{event['event_start_timestamp'].strftime('%Y-%m-%d %I:%M:%S %p')}}</p>
+                    <p>End Date: {{event['event_end_timestamp'].strftime('%Y-%m-%d %I:%M:%S %p')}}</p>
+                    {% if event['event_public'] is false %}
+                    <p>This is a private event!</p>
+                    {% endif %}
+                </div>
             <div class="card-buttons">
-                <button>Accept</button><button>Decline</button><button>Edit</button>
+                <button>Accept</button>
+                <button>Decline</button>
+                {% if (verify_admin_user(session['user_id'], event['group_id'], event['event_id'])['user_role'] == 0) or 
+                (verify_admin_user(session['user_id'], event['group_id'], event['event_id'])['user_role'] == 1) %}
+                <button><a href="/groups/{{event['group_id']}}/event_edit/{{event['event_id']}}/">Edit</a></button>
+                {% endif %}
             </div>
         </div>
         {% endfor %}
