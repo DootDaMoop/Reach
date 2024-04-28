@@ -182,7 +182,6 @@ def get_group_public_status(group_id: str) -> bool:
                 return result[0]  # Assuming 'group_public' is the first column returned
             else:
                 raise ValueError("Group not found with the specified ID")
-            
 
 
 
