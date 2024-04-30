@@ -29,13 +29,14 @@
                     <p>Role: Admin</p>
                 {% elif membership.user_role|int == 2 %}
                     <p>Role: Member</p>
-                {% elif membership.user_role|int == 3 %}
-                    <p>Role: Non-Member</p>
                 {% endif %}
 
             </div>
             <div class="group-options">
-                <button><a href="/groups/{{ group.group_id }}/group_edit/">Edit</a></button><button>Message</button><button class="leave">Leave</button>
+                <button><a href="/groups/{{ group['group_id'] }}/create_event/">Add Event</a></button>
+                <button><a href="/groups/{{ group['group_id'] }}/group_edit/">Edit</a></button>
+                <button>Message</button>
+                <button class="leave">Leave</button>
             </div>
         </div>
         <nav class="feed-nav">
@@ -45,13 +46,34 @@
                 <li id="activate-calendar" class="mb-3 text-lg md:text-xl">Calendar</li>
             </ul>
         </nav>
+        {% for event in group_events %}
+        <div class="card border-bold rounded">
+            <div class="card-image"><img src="/static/img/Image1.png" alt="Image"></div>
+                <div class="card-content">
+                    <h2>{{event['event_name']}}</h2>
+                    <p>{{event['event_description']}}</p>
+                    <p>Start Date: {{event['event_start_timestamp'].strftime('%Y-%m-%d %I:%M:%S %p')}}</p>
+                    <p>End Date: {{event['event_end_timestamp'].strftime('%Y-%m-%d %I:%M:%S %p')}}</p>
+                    {% if event['event_public'] is false %}
+                    <p>This is a private event!</p>
+                    {% endif %}
+                </div>
+            <div class="card-buttons">
+                <button>Accept</button>
+                <button>Decline</button>
+                {% if (membership.user_role|int == 0) or (membership.user_role|int == 1) %}
+                <button><a href="/groups/{{group['group_id']}}/event_edit/{{event['event_id']}}/">Edit</a></button>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+
         <div id="calendar" class="hidden">
             <script src="{{ url_for('static', filename='calendar.js') }}"></script>
             <div>
                 <button onclick="prevMonth()">Prev Month</button>
                 <button onclick="nextMonth()">Next Month</button>
             </div>
-            
         </div>
     </div>
     
