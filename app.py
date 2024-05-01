@@ -178,7 +178,12 @@ def accept_event():
     event_id = data['eventId']
     user_id = data['userId']
 
-    # TODO: Validation
+    if not event_id or not user_id:
+        return jsonify({'error': 'missing eventId or userId'}), 400
+    
+    if int(user_id) != session['user_id']:
+        return jsonify({'error': 'Unauthorized user'}), 401
+    
     event_repo.accept_event(event_id, user_id)
 
     return jsonify({'message': 'Event accepted successfully'})
@@ -189,7 +194,12 @@ def decline_event():
     event_id = data['eventId']
     user_id = data['userId']
 
-    # TODO: Validation
+    if not event_id or not user_id:
+        return jsonify({'error': 'missing eventId or userId'}), 400
+    
+    if int(user_id) != session['user_id']:
+        return jsonify({'error': 'Unauthorized user'}), 401
+    
     event_repo.decline_event(event_id, user_id)
 
     return jsonify({'message': 'Event declined successfully'})
@@ -200,7 +210,12 @@ def revert_event():
     event_id = data['eventId']
     user_id = data['userId']
 
-    # TODO: Validation
+    if not event_id or not user_id:
+        return jsonify({'error': 'missing eventId or userId'}), 400
+    
+    if int(user_id) != session['user_id']:
+        return jsonify({'error': 'Unauthorized user'}), 401
+    
     event_repo.revert_event_choice(event_id, user_id)
 
     return jsonify({'message': 'Event declined successfully'})
