@@ -226,9 +226,6 @@ def get_members_and_roles(group_id: str):
             else:
                 return "No members found for this group."
 
-
-
-
 def update_group_description(group_id: str, new_description: str):
     pool = get_pool()
     with pool.connection() as conn:
