@@ -92,7 +92,7 @@ def get_all_user_group_events_for_selected_group(user_id: int, group_id: int):
         with conn.cursor(row_factory=dict_row) as cursor:
             cursor.execute('''
                             SELECT
-                                event.event_id, group_id, event_name, event_description, event_public, event_start_timestamp, event_end_timestamp
+                                event.event_id, group_id, event_name, event_description, event_public, event_start_timestamp, event_end_timestamp, attending
                             FROM
                                 pending
                             JOIN
