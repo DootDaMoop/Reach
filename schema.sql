@@ -9,15 +9,16 @@ CREATE TABLE IF NOT EXISTS "user" (
     user_first_name VARCHAR(255),
     user_last_name  VARCHAR(255),
     google_id       VARCHAR(255) UNIQUE,
+    profile_picture   BYTEA,
     PRIMARY KEY (user_id)
 );
-
 CREATE TABLE IF NOT EXISTS "group" (
     group_id            SERIAL,
     user_id             SERIAL,
     group_name          VARCHAR(255) NOT NULL,
     group_description   VARCHAR(1000),
     group_public        BOOLEAN,
+    group_picture   BYTEA,
     FOREIGN KEY (user_id) REFERENCES "user"(user_id),
     PRIMARY KEY (group_id)
 );

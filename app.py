@@ -186,7 +186,6 @@ def edit(group_id: str):
     status = group_repo.get_group_public_status(group_id)
     description = group_repo.get_group_description_by_id(group_id)
     members = group_repo.get_members_and_roles(group_id)
-    
     new_group_name = group_repo.update_group_name(group_id, request.form.get('group_name'))
     new_status = group_repo.update_group_status(group_id, True if request.form.get('privacy') == "on" else False)
     new_description = group_repo.update_group_description(group_id, request.form.get('description'))
@@ -211,7 +210,21 @@ def get_edit_user_profile_page(user_id: int):
 def edit_user_profile(user_id: int):
     user = user_repo.get_user_from_user_id(session['user_id'])
     new_user = user_repo.edit_user(user['user_id'], request.form.get('username'), request.form.get('email'), request.form.get('password'), request.form.get('first_name'), request.form.get('last_name'))
+    profile_picture = user_repo.update_profile_picture(session['user_id'], request.files.get('profile_picture'))
+    print(profile_picture)
     return redirect(f"/profile/{user_id}")
+
+
+
+
+@app.get('/profile_picture/<int:user_id>')
+def profile_picture(user_id):
+    return user_repo.get_profile_picture(user_id)
+
+@app.get('/group_picture/<int:user_id>')
+def group_picture(group_id):
+    return group_repo.get_group_picture(group_id)
+
 
 @app.get('/groups/create/')
 @login_is_required

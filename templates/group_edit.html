@@ -7,6 +7,13 @@
 {% endblock %}
 
 {% block main %}
+<style>
+    .card{
+        box-shadow: none;
+        border: none;
+        background-color: transparent;
+    }
+</style>
 <div class="kick-confirm hidden">Do you wish to kick this user?
     
     <div class="confirm-buttons">
@@ -27,7 +34,9 @@
     <h1 class="mx-4">Members: </h1>
     {% for member in members %}
     <div class="member">
-        <img src="" alt="profile icon">
+        <div class = "card h-100">
+        <img src="/profile_picture/{{ member.user_id }}" alt="Card image cap" class = card-img-top>
+        </div>
         <p class="w-25">{{ member.user_name }}</p>
         <p>Role: {{ member.user_role }}</p>
         <div class="dropdown">
