@@ -237,13 +237,5 @@ def create_group_page():
 if __name__ == "__main__":
     app.run(debug=True)
 
-
-def send_email(subject, body, sender, recipients, password):
-    msg = MIMEText(body)
-    msg['Subject'] = subject
-    msg['From'] = sender
-    msg['To'] = ', '.join(recipients)
-    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp_server:
-        smtp_server.login(sender, password)
-        smtp_server.sendmail(sender, recipients, msg.as_string())
-    print("Message sent!")
+#@app.get('')
+#def delete_event():

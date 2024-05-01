@@ -165,3 +165,18 @@ def check_if_user_id_is_using_google_account(user_id: int) -> Tuple[bool, Dict[s
             return False, {'message': 'User is not linked to a Google account.'}
     return False, {'error': 'User does not exist.'}
 
+def delete_user(user_id: str) -> dict[str: Any]:
+    
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=dict_row) as cur:
+            cur.execute('''
+                        DELETE FROM "user" WHERE user_id = %s
+                        ''', user_id)
+            user_id = cur.fetchone()
+            if user_id is None:
+                raise Exception('Failed to delete user.')
+            return {
+                'user_id': user_id
+            }
+
