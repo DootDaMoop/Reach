@@ -7,6 +7,7 @@
 {% endblock %}
 
 {% block main %}
+
 <div class="kick-confirm hidden">Do you wish to kick this user?
     
     <div class="confirm-buttons">
@@ -15,17 +16,26 @@
     </div>
 </div>
 
+
 <div class="group-edit-card shadow-lg">
-    <div class="group-image-container"><img src="/static/img/SPECTRAL.webp" alt="OOGA BOOGA" class="group-image"></div>
+    <div class="group-image-container"><img src="/static/img/SPECTRAL.webp" alt="Card image cap" class="group-image card-img-top"></div>
     <div class="group-info">
-        <h2>Lambda Phi Epsilon International Fraternity Inc. <i class="fa-solid fa-pen-to-square edit-icon"></i></h2>
-        <p>Privacy: Private <i class="fa-solid fa-pen-to-square edit-icon"></i></p>
-        <p class="">About: A Lambda is the epitome of dedication and commitment, dedication to the pursiot of noble purpose and commitment to the five; wisdom, love, cultural heritage, courage leadership, and authenticity. A Lambda man focuses his sight not on the destination, for the worth is found in experiancing the journey. With his brothers he lights the way, to shape the world as he envisions. He is a Lambda, a leader among men. <i class="fa-solid fa-pen-to-square edit-icon"></i></p>
+        <section class="krevat-2hour-trip-to-uncc">
+            <h2 class="group-name">{{ group.group_name }}</h2>
+            {% if group.group_public == true %}
+            <p class="privacy">Privacy: Public</p>
+            {% elif group.group_public == false %}
+            <p class="privacy" >Privacy: Private</p>
+            {% endif %}
+            <p class="description">About: {{ group.group_description }}</p>
+            <i class="fa-solid fa-pen-to-square edit-icon"></i>
+        </section>
     </div>
 </div>
 <div class="member-list">
     <h1 class="mx-4">Members: </h1>
     {% for member in members %}
+    
     <div class="member">
         <img src="" alt="profile icon">
         <p class="w-25">{{ member.user_name }}</p>
@@ -33,7 +43,7 @@
         <div class="dropdown">
                 <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa-solid fa-ellipsis"></i></button>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a class="dropdown-item" > Profile</a>
+                    <a class="dropdown-item" href="/profile/{{ member.user_id }}"> Profile</a>
                     <a class="dropdown-item" > Role</a>
                     <a class="dropdown-item kick-user" > Kick</a>
                 </div>

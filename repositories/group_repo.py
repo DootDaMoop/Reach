@@ -145,6 +145,20 @@ def get_members_from_group_id(group_id: str):
                                 g1.group_id = %s;
                             ''', [group_id])
             return cursor.fetchall() 
+        
+def all_groups():
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=dict_row) as cursor:
+            cursor.execute('''
+                            SELECT
+                                *
+                            FROM
+                                "group"
+                            ''')
+            return cursor.fetchall()
+
+
 
 # TODO: Update group details
 

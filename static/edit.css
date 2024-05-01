@@ -11,7 +11,7 @@
     display: flex;
     height: 200px;
     border-radius: 5px;
-
+    overflow: scroll;
 }
 .edit-icon:hover {
     cursor: pointer;
@@ -107,4 +107,5 @@
 }
 /*- - - - - kick confirm design - - - - - */
 
+/* - - - - - edit form design - - - - - - */
 

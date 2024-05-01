@@ -2,13 +2,11 @@ import os
 import pathlib
 import requests
 import json
-from flask import Flask, session, abort, redirect, request, render_template
+from flask import Flask, session, abort, redirect, request, render_template, url_for
 from google.oauth2 import id_token
 from google_auth_oauthlib.flow import Flow
 from pip._vendor import cachecontrol
 import google.auth.transport.requests
-from model.User import User
-#from user_repo.User_management import User_management
 from dotenv import load_dotenv
 from repositories import user_repo, group_repo, event_repo
 from functools import wraps
@@ -185,8 +183,19 @@ def group(group_id:str):
 @app.get("/groups/<group_id>/group_edit/")
 def edit(group_id: str):
     members = group_repo.get_members_from_group_id(group_id)
-    return render_template("group_edit.html", members=members)
+    group = group_repo.get_user_group_from_group_id(group_id)
+    return render_template("group_edit.html", members=members, group=group)
+
+@app.post("/groups/<group_id>/group_edit/")
+def save_edit(group_id: str):
+    group_name = request.form.get('group-name')
+    group_description = request.form.get('description')
+    group_publicity = request.form.get('privacy')
+    if(group_publicity is None):
+        group_publicity = False
+    # CALL GROUP REPO METHODS TO UPDATE DATA INTO DATABASE
     
+    return redirect(url_for('edit', group_id=group_id))
 
 @app.get('/profile/<int:user_id>')
 def profile(user_id: int):
@@ -211,6 +220,12 @@ def edit_user_profile(user_id: int):
 @login_is_required
 def get_create_group_page():
     return render_template('create_group.html')
+
+@app.get('/find_group')
+@login_is_required
+def load_find_group_page():
+    groups = group_repo.all_groups()
+    return render_template('find_group.html', groups=groups)
 
 @app.post('/groups/create/')
 def create_group_page():

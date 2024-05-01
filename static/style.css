@@ -77,6 +77,10 @@ nav ul li {
     gap: 4px;
     margin: 6px 6px;
 }
+.group-info h1 {
+    font-size: larger;
+    padding-bottom: 4px;
+}
 .card div {
     padding: 10px;
 }
@@ -179,5 +183,11 @@ img {
 }
 /*- - - - - HIDDEN - - - - - */
 
-
+#group-meta {
+    display: flex;
+}
+#group-meta p {
+    margin-right: 1rem;
+    padding: 6px;
+}
 

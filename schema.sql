@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS "group" (
     user_id             SERIAL,
     group_name          VARCHAR(255) NOT NULL,
     group_description   VARCHAR(1000),
-    group_public        BOOLEAN,
+    group_public        BOOLEAN NOT NULL,
     FOREIGN KEY (user_id) REFERENCES "user"(user_id),
     PRIMARY KEY (group_id)
 );

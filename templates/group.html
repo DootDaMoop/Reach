@@ -6,7 +6,7 @@
 {% block main %}
 <section class="grid-container">
     <div class="main-header"><h1>My Groups:</h1></div>
-    <div class="main-header"><h1>{{ group.group_name }}</h1></div>
+    <div class="main-header"></div>
     <div class="sidebar">
         <form action='/group' method="get">
             <ul>
@@ -21,18 +21,26 @@
         <div class="group-prf-card">
             <div class="card-image"><img src="/static/img/Mukaka.jpg"></div>
             <div class="group-info">
-                <h1>Owner: {{ group_owner.user_name }}</h1>
-                <p>Members: {{ member_count }}</p>
-                {% if membership.user_role|int == 0 %}
-                    <p>Role: Owner</p>
-                {% elif membership.user_role|int == 1 %}
-                    <p>Role: Admin</p>
-                {% elif membership.user_role|int == 2 %}
-                    <p>Role: Member</p>
-                {% elif membership.user_role|int == 3 %}
-                    <p>Role: Non-Member</p>
-                {% endif %}
-
+                <h1>{{ group.group_name }}</h1>
+                <p> {{ group.group_description }}</p>
+                <div class="container" id="group-meta">
+                    <p class="text-muted group-identifier">#{{ group.group_id }}</p>
+                    <p>Owner: {{ group_owner.user_name }}</p>
+                    <p>Members: {{ member_count }}</p>
+                    {% if group.group_public == true %}
+                        <p>Privacy: Public</p>
+                    {% elif group.group_public == false %}
+                        <p>Privacy: Private</p>
+                    {% endif %}
+                    {% if membership is none %}
+                    {% elif membership.user_role|int == 0 %}
+                        <p>Role: Owner</p>
+                    {% elif membership.user_role|int == 1 %}
+                        <p>Role: Admin</p>
+                    {% elif membership.user_role|int == 2 %}
+                        <p>Role: Member</p>
+                    {% endif %}
+                </div>
             </div>
             <div class="group-options">
                 <button><a href="/groups/{{ group.group_id }}/group_edit/">Edit</a></button><button>Message</button><button class="leave">Leave</button>
