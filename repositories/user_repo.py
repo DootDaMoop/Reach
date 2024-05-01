@@ -79,8 +79,6 @@ def register_user(username: str, email: str, password: str, first_name: str, las
                 'username': username
             }
 
-
-
 # Can use as singleton
 def get_user_from_username(username: str) -> dict[str, Any] | None:
     pool = get_pool()
@@ -154,7 +152,6 @@ def edit_user(user_id: int, username: str, email: str, password: str | None, fir
             if user is None:
                 return None
             return user
-            return user      
 
 def check_if_user_id_is_using_google_account(user_id: int) -> Tuple[bool, Dict[str, Any]]:
     user = get_user_from_user_id(user_id)
@@ -180,3 +177,20 @@ def delete_user(user_id: str) -> dict[str: Any]:
                 'user_id': user_id
             }
 
+def get_user_role_by_group_id(user_id: str, group_id: str):
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=dict_row) as cursor:
+            cursor.execute('''
+                SELECT 
+                    user_role
+                FROM 
+                    membership
+                WHERE 
+                    user_id = %s AND group_id = %s;
+            ''', [user_id, group_id])
+            result = cursor.fetchone()
+            if result:
+                return result['user_role']
+            else:
+                return "User role not found in this group."

@@ -1,0 +1,42 @@
+{% extends '_layout.html' %}
+
+{% block title %}Create Event{% endblock %}
+{%  block head_script %}{% endblock %}
+
+{% block main %}
+
+<form action="{{ url_for('update_edited_event', group_id=group['group_id'], event_id=event['event_id']) }}" method="post">
+    <div>
+        <label for="event_name">Event Name:</label>
+        <input type="text" id="event_name " name="event_name" value="{{event['event_name']}}" required>
+    </div>
+    <div>
+        <label for="event_description">Event Description:</label>
+        <input type="text" id="event_description" name="event_description" value="{{event['event_description']}}" required>
+    </div>
+    <div>
+        <label for="is_event_public">Is Event Public:</label>
+        {% if event['event_public'] %}
+        <input type="checkbox" id="is_event_public" name="is_event_public" checked>
+        {% else %}
+        <input type="checkbox" id="is_event_public" name="is_event_public">
+        {% endif %}
+    </div>
+    <div>
+        <label for="event_start_date">Event Start Date:</label>
+        <input type="datetime-local" id="event_start_date" name="event_start_date" value="{{event['event_start_timestamp']}}" required>
+    </div>
+    <div>
+        <label for="event_end_date">Event End Date:</label>
+        <input type="datetime-local" id="event_end_date" name="event_end_date" value="{{event['event_end_timestamp']}}" required>
+    </div>
+    <div>
+        <button type="submit">Edit Event</button>
+    </div>
+</form>
+
+<form action="{{url_for('delete_event', event_id=event['event_id'],group_id=group['group_id']) }}" method="post">
+    <button>Delete Event</button>
+</form>
+
+{% endblock %}
