@@ -210,3 +210,20 @@ def revert_event_choice(event_id: int, user_id: int):
                             attending = null
                         WHERE event_id = %s AND user_id = %s
                         ''', [event_id, user_id])
+
+def get_user_events_for_day(user_id: int, year: int, month: int, day: int):
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=dict_row) as cur:
+            cur.execute('''
+                        SELECT
+                            *
+                        FROM
+                            event
+                        WHERE user_id = %s AND DATE(event_start_timestamp) = %s
+                        ''', [user_id, f'{year}-{month:02}-{day:02}'])
+            events = cur.fetchall()
+
+            if events is None:
+                raise Exception('Failed to get events for day')
+            return events

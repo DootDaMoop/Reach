@@ -220,6 +220,18 @@ def revert_event():
 
     return jsonify({'message': 'Event declined successfully'})
 
+@app.post('/get_events_for_day')
+def get_user_events_for_calendar_on_day():
+    data = request.json
+    year = data['year']
+    month = data['month']
+    day = data['day']
+
+    events = event_repo.get_user_events_for_day(session['user_id'],year, month, day)
+
+    return jsonify(events)
+
+
 @app.get('/groups/<int:group_id>/group_edit/')
 def get_edit_group_page(group_id: int):
     if group_repo.get_role_in_group_from_user_and_group_id(session['user_id'], group_id)['user_role'] != (0 and 1):
