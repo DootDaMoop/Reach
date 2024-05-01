@@ -36,3 +36,18 @@ def create_event(user_id: str, group_id: str, event_name:str, event_description:
                 'event_id': event_id,
                 'event_name': event_name
             }
+        
+def delete_event(event_id: str) -> dict[str: Any]:
+    
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=dict_row) as cur:
+            cur.execute('''
+                        DELETE FROM event WHERE event_id = %s
+                        ''', event_id)
+            event_id = cur.fetchone()
+            if event_id is None:
+                raise Exception('Failed to delete event.')
+            return {
+                'event_id': event_id
+            }

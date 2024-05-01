@@ -2,16 +2,16 @@ import os
 import pathlib
 import requests
 import json
-from flask import Flask, session, abort, redirect, request, render_template
+from flask import Flask, session, abort, redirect, request, render_template, jsonify, url_for
 from google.oauth2 import id_token
 from google_auth_oauthlib.flow import Flow
 from pip._vendor import cachecontrol
 import google.auth.transport.requests
-from model.User import User
-#from user_repo.User_management import User_management
 from dotenv import load_dotenv
 from repositories import user_repo, group_repo, event_repo
 from functools import wraps
+import smtplib
+from email.mime.text import MIMEText
 
 load_dotenv()
 
@@ -191,6 +191,7 @@ def edit(group_id: str):
 @app.get('/profile/<int:user_id>')
 def profile(user_id: int):
     user = user_repo.get_user_from_user_id(user_id)
+
     return render_template('profile.html', user=user)
 
 @app.get('/profile/<int:user_id>/edit')
@@ -235,3 +236,14 @@ def create_group_page():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+
+def send_email(subject, body, sender, recipients, password):
+    msg = MIMEText(body)
+    msg['Subject'] = subject
+    msg['From'] = sender
+    msg['To'] = ', '.join(recipients)
+    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp_server:
+        smtp_server.login(sender, password)
+        smtp_server.sendmail(sender, recipients, msg.as_string())
+    print("Message sent!")
