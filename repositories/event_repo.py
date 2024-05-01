@@ -1,5 +1,5 @@
 from repositories.db import get_pool
-from repositories.group_repo import get_all_members_from_group_id
+from repositories.group_repo import get_members_from_group_id
 from psycopg.rows import dict_row
 from typing import Any
 
@@ -109,7 +109,7 @@ def invite_all_users_in_group_to_event(group_id: int, event_id: int) -> dict[str
     pool = get_pool()
     with pool.connection() as conn:
         with conn.cursor(row_factory=dict_row) as cur:
-            members = get_all_members_from_group_id(group_id)
+            members = get_members_from_group_id(group_id)
             
             for member in members:
                 user_id = member['user_id']
@@ -165,7 +165,7 @@ def edit_event(event_id: int, event_name: str, event_description: str, event_pub
                 'event_id': event_id
             }
 
-def delete_event(event_id):
+def delete_event(event_id: int):
     pool = get_pool()
     with pool.connection() as conn:
         with conn.cursor(row_factory=dict_row) as cur:
@@ -173,4 +173,44 @@ def delete_event(event_id):
                         DELETE FROM
                             event
                         WHERE event_id = %s
+                        RETURNING event_id
                         ''', [event_id])
+            event_id = cur.fetchone()
+            if event_id is None:
+                raise Exception('Failed to delete event.')
+            return {
+                'event_id': event_id
+            }
+
+#RUN THESE TWO FUNCTIONS BEFORE RUNNING delete_event
+def delete_event_from_collab(event_id: int):
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=dict_row) as cur:
+            cur.execute('''
+                        DELETE FROM
+                            collaboration
+                        WHERE event_id = %s
+                        RETURNING event_id
+                        ''', [event_id])
+            event_id = cur.fetchone()
+            return {
+                'event_id': event_id
+            }
+
+def delete_event_from_pending(event_id: int):
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=dict_row) as cur:
+            cur.execute('''
+                        DELETE FROM
+                            pending
+                        WHERE event_id = %s
+                        RETURNING event_id
+                        ''', [event_id])
+            event_id = cur.fetchone()
+            if event_id is None:
+                raise Exception('Failed to delete event from collaboration.')
+            return {
+                'event_id': event_id
+            }

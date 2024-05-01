@@ -262,8 +262,16 @@ def delete_event(event_id: int, group_id: int):
     if event['event_public'] is False and (event['user_id'] != session['user_id'] or group_repo.get_user_group_from_group_id(event['group_id'])['user_id'] != session['user_id']):
         return redirect(url_for('get_event_edit_page', group_id=group_id, event_id=event_id))
     
+    #Added functions to make sure a foreign key constraint is not being hit 
+    event_repo.delete_event_from_pending(event_id)
+    event_repo.delete_event_from_collab(event_id)
     event_repo.delete_event(event_id)
     return redirect(session['prev_url'])
+
+#PROFILE ROUTES
+
+
+
 
 @app.get('/profile/<int:user_id>')
 def profile(user_id: int):
@@ -325,6 +333,3 @@ def create_group_page():
 
 if __name__ == "__main__":
     app.run(debug=True)
-
-#@app.get('')
-#def delete_event():
