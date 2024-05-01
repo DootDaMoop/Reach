@@ -1,5 +1,5 @@
 from repositories.db import get_pool
-from repositories.group_repo import get_all_members_from_group_id
+from repositories import group_repo
 from psycopg.rows import dict_row
 from typing import Any
 
@@ -73,7 +73,7 @@ def get_all_user_group_events(user_id: int):
         with conn.cursor(row_factory=dict_row) as cursor:
             cursor.execute('''
                             SELECT
-                                event.event_id, group_id, event_name, event_description, event_public, event_start_timestamp, event_end_timestamp
+                                event.event_id, group_id, event_name, event_description, event_public, event_start_timestamp, event_end_timestamp, attending
                             FROM
                                 pending
                             INNER JOIN
@@ -92,7 +92,7 @@ def get_all_user_group_events_for_selected_group(user_id: int, group_id: int):
         with conn.cursor(row_factory=dict_row) as cursor:
             cursor.execute('''
                             SELECT
-                                event.event_id, group_id, event_name, event_description, event_public, event_start_timestamp, event_end_timestamp
+                                event.event_id, group_id, event_name, event_description, event_public, event_start_timestamp, event_end_timestamp, attending
                             FROM
                                 pending
                             JOIN
@@ -109,7 +109,7 @@ def invite_all_users_in_group_to_event(group_id: int, event_id: int) -> dict[str
     pool = get_pool()
     with pool.connection() as conn:
         with conn.cursor(row_factory=dict_row) as cur:
-            members = get_all_members_from_group_id(group_id)
+            members = group_repo.get_members_from_group_id(group_id)
             
             for member in members:
                 user_id = member['user_id']
@@ -159,7 +159,7 @@ def edit_event(event_id: int, event_name: str, event_description: str, event_pub
                         WHERE event_id = %s
                         ''', [event_name, event_description, event_public, event_start_timestamp, event_end_timestamp, event_id])
 
-def delete_event(event_id):
+def delete_event(event_id: int):
     pool = get_pool()
     with pool.connection() as conn:
         with conn.cursor(row_factory=dict_row) as cur:
@@ -174,3 +174,56 @@ def delete_event(event_id):
                             event
                         WHERE event_id = %s
                         ''', [event_id])
+
+def accept_event(event_id: int, user_id: int):
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=dict_row) as cur:
+            cur.execute('''
+                        UPDATE
+                            pending
+                        SET
+                            attending = true
+                        WHERE event_id = %s AND user_id = %s
+                        ''', [event_id, user_id])
+
+def decline_event(event_id: int, user_id: int):
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=dict_row) as cur:
+            cur.execute('''
+                        UPDATE
+                            pending
+                        SET
+                            attending = false
+                        WHERE event_id = %s AND user_id = %s
+                        ''', [event_id, user_id])
+
+def revert_event_choice(event_id: int, user_id: int):
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=dict_row) as cur:
+            cur.execute('''
+                        UPDATE
+                            pending
+                        SET
+                            attending = null
+                        WHERE event_id = %s AND user_id = %s
+                        ''', [event_id, user_id])
+
+def get_user_events_for_day(user_id: int, year: int, month: int, day: int):
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=dict_row) as cur:
+            cur.execute('''
+                        SELECT
+                            *
+                        FROM
+                            event
+                        WHERE user_id = %s AND DATE(event_start_timestamp) = %s
+                        ''', [user_id, f'{year}-{month:02}-{day:02}'])
+            events = cur.fetchall()
+
+            if events is None:
+                raise Exception('Failed to get events for day')
+            return events

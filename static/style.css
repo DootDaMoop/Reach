@@ -113,6 +113,44 @@ nav ul li {
 .card-buttons button:hover {
     background-color: rgb(165, 165, 165);
 }
+
+.choice-card { /* General choice-card Designs */
+    display: grid;
+    height: 260px;
+    grid-template-rows: 5fr 1fr;
+    grid-template-columns: 30% 70%;
+    box-shadow: 2px 3px 5px;
+    background-color: aliceblue;
+    padding: 4px;
+    gap: 4px;
+    margin: 6px 6px;
+}
+.choice-card div {
+    padding: 10px;
+}
+.choice-card div:nth-child(1) {
+    grid-column: 1;
+    grid-row: 1;
+    width: auto;
+}
+.choice-card div:nth-child(2) {
+    grid-column: 2;
+    grid-row: 1;
+    width: auto;
+}
+.choice-card div:nth-child(3) {
+    grid-column: 1 / span 2; /* This makes the third child span both columns of the second row */
+    grid-row: 2;
+    width: auto;
+}
+
+.accepted {
+    background-color: green;
+}
+
+.declined {
+    background-color: red;
+}
 /*- - - - - CARD STYLES - - - - -*/
 
 /*- - - - - GROUP CARD STYLES - - - - -*/

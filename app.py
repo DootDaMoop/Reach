@@ -2,7 +2,7 @@ import os
 import pathlib
 import requests
 import json
-from flask import Flask, session, abort, redirect, request, render_template, url_for
+from flask import Flask, session, abort, redirect, request, render_template, url_for, jsonify
 from google.oauth2 import id_token
 from google_auth_oauthlib.flow import Flow
 from pip._vendor import cachecontrol
@@ -154,7 +154,7 @@ def login_manual():
 @login_is_required
 def home():
     session['prev_url'] = url_for('home')
-    groups = group_repo.get_groups_from_user_id(session['user_id']) # This is wrong because this will only list groups that the user OWNS
+    groups = group_repo.get_groups_from_user_id(session['user_id'])
     home_events = event_repo.get_all_user_group_events(session['user_id'])
     return render_template("home.html", groups=groups, home_events=home_events, verify_admin_user=event_repo.verify_user_admin_for_event)
 
@@ -171,6 +171,66 @@ def group(group_id: int):
     # Everything above this comment is information for the indvidual selected group
     sidebar_groups = group_repo.get_groups_from_user_id(session['user_id'])
     return render_template('group.html', group=group, sidebar_groups=sidebar_groups, group_owner=group_owner, member_count = member_count, membership=membership, group_events=group_events)
+
+@app.post('/accept_event')
+def accept_event():
+    data = request.json
+    event_id = data['eventId']
+    user_id = data['userId']
+
+    if not event_id or not user_id:
+        return jsonify({'error': 'missing eventId or userId'}), 400
+    
+    if int(user_id) != session['user_id']:
+        return jsonify({'error': 'Unauthorized user'}), 401
+    
+    event_repo.accept_event(event_id, user_id)
+
+    return jsonify({'message': 'Event accepted successfully'})
+
+@app.post('/decline_event')
+def decline_event():
+    data = request.json
+    event_id = data['eventId']
+    user_id = data['userId']
+
+    if not event_id or not user_id:
+        return jsonify({'error': 'missing eventId or userId'}), 400
+    
+    if int(user_id) != session['user_id']:
+        return jsonify({'error': 'Unauthorized user'}), 401
+    
+    event_repo.decline_event(event_id, user_id)
+
+    return jsonify({'message': 'Event declined successfully'})
+
+@app.post('/revert_event')
+def revert_event():
+    data = request.json
+    event_id = data['eventId']
+    user_id = data['userId']
+
+    if not event_id or not user_id:
+        return jsonify({'error': 'missing eventId or userId'}), 400
+    
+    if int(user_id) != session['user_id']:
+        return jsonify({'error': 'Unauthorized user'}), 401
+    
+    event_repo.revert_event_choice(event_id, user_id)
+
+    return jsonify({'message': 'Event declined successfully'})
+
+@app.post('/get_events_for_day')
+def get_user_events_for_calendar_on_day():
+    data = request.json
+    year = data['year']
+    month = data['month']
+    day = data['day']
+
+    events = event_repo.get_user_events_for_day(session['user_id'],year, month, day)
+
+    return jsonify(events)
+
 
 @app.get('/groups/<int:group_id>/group_edit/')
 def get_edit_group_page(group_id: int):
