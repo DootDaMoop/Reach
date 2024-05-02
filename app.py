@@ -176,6 +176,22 @@ def group(group_id: int):
     sidebar_groups = group_repo.get_groups_from_user_id(session['user_id'])
     return render_template('group.html', group=group, sidebar_groups=sidebar_groups, group_owner=group_owner, member_count = member_count, membership=membership, group_events=group_events, members=members)
 
+@app.post('/groups/<int:group_id>/join')
+def group_join(group_id: int):
+    if(group_repo.check_membership(session['user_id'], group_id) is None): # checks if user is member, if not then add them to group
+        group_repo.join_group(session['user_id'], group_id)        
+    return redirect(url_for('group', group_id=group_id))
+
+@app.post('/groups/<int:group_id>/leave')
+def group_leave(group_id: int):
+    if(group_repo.check_membership(session['user_id'], group_id) is not None): # checks if the user exist, if so remove them
+        group_repo.remove_member_from_group(session['user_id'], group_id)    
+        
+    member_count = group_repo.get_member_count_from_group_id(group_id) # member count of group 
+    if(member_count == 0):
+        group_repo.delete_group(group_id) # deletes a group from database if member count is 0
+    return redirect('/home') # redirect to home page
+
 @app.get("/groups/<group_id>/group_edit/")
 def edit(group_id: str):
     members = group_repo.get_members_from_group_id(group_id)
@@ -347,6 +363,7 @@ def delete_event(event_id: int, group_id: int):
         return redirect(url_for('get_event_edit_page', group_id=group_id, event_id=event_id))
     
     event_repo.delete_event(event_id)
+    print(session['prev_url'])
     return redirect(session['prev_url'])
 
 @app.get('/groups/<int:group_id>/group_edit/delete/')
@@ -507,6 +524,10 @@ def create_group_page():
         return redirect('/home')
     else:
         return message, 400
+    
+@app.get('/event') 
+def event():
+    return render_template("event.html")
 
 if __name__ == "__main__":
     app.run(debug=True)

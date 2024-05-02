@@ -1,42 +1,51 @@
-{% extends '_layout.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='calendar.css') }}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <script src="/static/slider.js" defer></script>
+</head>
 
-{% block title %}Login Page{% endblock %}
-{%  block head_script %}{% endblock %}
-
-{% block main %}
+<body>
+    <div class="p-8">
+        <h2 class="text-3xl font-bold">Login with Email</h2>
+        <form action="/login_manual" method="post" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            <div>
+                <label for="username" class="block text-gray-700 text-sm font-bold mb-2">Username:</label>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-5" type="username" id="username" name="username" required>
+            </div>
+            <div>
+                <label for="email" class="block text-gray-700 text-sm font-bold mb-2">Email:</label>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-5" type="email" id="email" name="email" required>
+            </div>
+            <div>
+                <label for="password" class="block text-gray-700 text-sm font-bold mb-2">Password:</label>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-5" type="password" id="password" name="password" required>
+            </div>
+            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Login</button>
+        </form>
+    </div>
+    
+    <!-- Registration Link -->
+    
+    <!-- Google Sign In -->
+    <div class="p-8">
+        <div>
+            <a href='/google_login' class="ml-4"><button class="login-with-google-btn">Sign in with Google</button></a>
+        </div>
+        <div>
+            <a href="/registration" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center mb-4 mt-4 ml-4">Register</a>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</body>
+</html>
 <!-- Custom Login Form -->
-<div>
-    <h2 class="text-3xl font-bold">Login with Email</h2>
-    <form action="/login_manual" method="post" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-        <div>
-            <label for="username" class="block text-gray-700 text-sm font-bold mb-2">Username:</label>
-            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-5" type="username" id="username" name="username" required>
-        </div>
-        <div>
-            <label for="email" class="block text-gray-700 text-sm font-bold mb-2">Email:</label>
-            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-5" type="email" id="email" name="email" required>
-        </div>
-        <div>
-            <label for="password" class="block text-gray-700 text-sm font-bold mb-2">Password:</label>
-            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-5" type="password" id="password" name="password" required>
-        </div>
-        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Login</button>
-    </form>
-</div>
-
-<!-- Registration Link -->
-
-<!-- Google Sign In -->
-<div>
-    <a href='/google_login' class="ml-4"><button>Sign in with Google</button></a>
-</div>
-
-
-<div>
-    <a href="/registration" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center mb-4 mt-4 ml-4">Register</a>
-</div>
-
-<div>
-    <a href="/calendar" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center mb-4 ml-4">Calendar</a>
-</div>
-{% endblock %}
