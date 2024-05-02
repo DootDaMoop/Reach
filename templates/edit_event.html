@@ -47,7 +47,7 @@
 </nav>
 <input class="form-control" type="text" name="search-bar-invited" id="search-bar-invited" placeholder="Search Invited Members">
 <input class="form-control hidden" type="text" name="search-bar-uninvited" id="search-bar-uninvited" placeholder="Search Uninivited Members">
-<div class="member-list">
+<div class="member-list mb-5">
     {% for member in members %}
 
     {% if verify_member_is_invited_to_event(member['user_id'],event['event_id']) is true %}
