@@ -34,11 +34,11 @@ def get_event_by_event_id(event_id: int):
                                 event
                             WHERE event_id = %s
                             ''', [event_id])
-            group = cur.fetchone()
+            event = cur.fetchone()
             
-            if group is None:
+            if event is None:
                 raise Exception('Failed to get event details')
-            return group
+            return event
 
 def create_event(user_id: int, group_id: int, event_name:str, event_description: str, event_public: bool, event_start_timestamp: str, event_end_timestamp: str) -> dict[str: Any]:
     pool = get_pool()
@@ -289,3 +289,74 @@ def get_user_events_for_day(user_id: int, year: int, month: int, day: int):
             if events is None:
                 raise Exception('Failed to get events for day')
             return events
+
+def get_members_for_edit_event_page(group_id: int):
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=dict_row) as cursor:
+            cursor.execute('''
+                            SELECT
+                                user_name, user_role, profile_picture, u.user_id
+                            FROM
+                                membership
+                            JOIN
+                                "user" u on membership.user_id = u.user_id
+                            WHERE
+                                group_id = %s
+                            ''', [group_id])
+            return cursor.fetchall()
+
+def verify_member_is_invited_to_event(user_id: int, event_id: int) -> bool:
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=dict_row) as cursor:
+            cursor.execute('''
+                            SELECT
+                                *
+                            FROM
+                                pending
+                            WHERE
+                                user_id = %s AND event_id = %s
+                            ''', [user_id, event_id])
+            user = cursor.fetchone()
+            if user:
+                return True
+            else:
+                return False
+
+def invite_user_to_event(user_id: int, event_id: int):
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=dict_row) as cur:
+            cur.execute('''
+                    INSERT INTO pending (user_id, event_id, attending)
+                    VALUES (%s, %s, NULL)
+                    RETURNING event_id
+                    ''', [user_id, event_id])
+            event = cur.fetchone()
+
+            if event is None:
+                raise Exception('Failed to send invite.')
+
+def remove_invited_user_from_event(user_id: int, event_id: int):
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=dict_row) as cur:
+            cur.execute('''
+                    DELETE FROM pending WHERE user_id = %s AND event_id = %s
+                    ''', [user_id, event_id])
+
+def get_attending_status(user_id, event_id):
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=dict_row) as cursor:
+            cursor.execute('''
+                            SELECT
+                                attending
+                            FROM
+                                pending
+                            WHERE
+                                user_id = %s AND event_id = %s
+                            ''', [user_id, event_id])
+            attending = cursor.fetchone()
+            return attending

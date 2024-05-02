@@ -188,37 +188,33 @@ def get_user_role_by_group_id(user_id: str, group_id: str):
 def update_profile_picture(user_id: int, profile_picture: FileStorage) -> bool:
     pool = get_pool()
     with pool.connection() as conn:
-        with conn.cursor() as cur:
+        with conn.cursor(row_factory=dict_row) as cur:
             try:
                 # Read the bytes from the FileStorage object
                 picture_bytes = profile_picture.read()
-
                 cur.execute('''
                     UPDATE "user"
-                    SET profile_picture = %(profile_picture)s
-                    WHERE user_id = %(user_id)s
-                ''', {'profile_picture': picture_bytes, 'user_id': user_id})
-                conn.commit()
+                    SET profile_picture = %s
+                    WHERE user_id = %s
+                ''', [picture_bytes, user_id])
                 return True
             except Exception as e:
                 logging.error("Error updating profile picture: %s", e)
                 conn.rollback()
                 return False
 
-
-
-
-
 def get_profile_picture(user_id: int):
     """Retrieve and send the profile picture for a given user."""
     pool = get_pool()
     with pool.connection() as conn:
         with conn.cursor(row_factory=dict_row) as cur:  # Ensure dict_row is used
-            cur.execute('SELECT profile_picture FROM "user" WHERE user_id = %s', (user_id,))
+            cur.execute('SELECT profile_picture FROM "user" WHERE user_id = %s', [user_id])
             row = cur.fetchone()
             if row and row['profile_picture']:
                 return Response(row['profile_picture'], mimetype='image/jpeg')
             else:
                 return "No profile picture found", 404
+
+
 
 

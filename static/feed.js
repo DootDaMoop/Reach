@@ -2,10 +2,16 @@
 // - - - - - THIS SECTION GRABS THE ELEMENTS WE NEED - - - - -
 let events = document.querySelectorAll('.card'); // event cards, stored in NodeList
 const eventButton = document.getElementById('activate-event');
+
 const calendar = document.getElementById('calendar'); // calendar 
 const calendarButton = document.getElementById('activate-calendar');
+
 let choiceEvents = document.querySelectorAll('.choice-card');
 const choiceEventButton = document.getElementById('activate-choice-events');
+
+let memberList = document.querySelectorAll('.member');
+const memberListButton = document.getElementById('activate-members')
+
 const acceptButtons = document.querySelectorAll('.accept-button');
 const declineButtons = document.querySelectorAll('.decline-button');
 const revertButtons = document.querySelectorAll('.revert-button');
@@ -15,6 +21,9 @@ const revertButtons = document.querySelectorAll('.revert-button');
 eventButton.addEventListener('click', showEvent);
 calendarButton.addEventListener('click', showCalendar);
 choiceEventButton.addEventListener('click', showChoiceEvent);
+if(memberListButton != null) {
+    memberListButton.addEventListener('click', showMembers);
+}
 
 acceptButtons.forEach(button => {
     button.addEventListener('click', function() {
@@ -44,11 +53,16 @@ revertButtons.forEach(button => {
 
 // EVERYTHING BELOW THIS COMMENT ARE DEFINING FUNCTIONS 
 
-function showEvent() {
-    updateAllEvents();
-    eventButton.classList.add('active');
+function showMembers() {
+    updateQueryInformation();
+    memberListButton.classList.add('active');
+    memberList.forEach(function (member) {
+        member.classList.remove('hidden');
+    });
+    
+    eventButton.classList.remove('active');
     events.forEach(function(event) {
-        event.classList.remove('hidden');
+        event.classList.add('hidden');
     });
 
     choiceEventButton.classList.remove('active');
@@ -60,10 +74,40 @@ function showEvent() {
     calendar.classList.add('hidden');
 }
 
+function showEvent() {
+    updateQueryInformation();
+    eventButton.classList.add('active');
+    events.forEach(function(event) {
+        event.classList.remove('hidden');
+    });
+
+    if(memberListButton != null) {
+        memberListButton.classList.remove('active');
+        memberList.forEach(function (member) {
+        member.classList.add('hidden');
+        });
+    }
+
+    choiceEventButton.classList.remove('active');
+    choiceEvents.forEach(function (event) {
+        event.classList.add('hidden');
+    });
+
+    calendarButton.classList.remove('active');
+    calendar.classList.add('hidden');
+}
+
 function showCalendar() {
-    updateAllEvents();
+    updateQueryInformation();
     calendarButton.classList.add('active');
     calendar.classList.remove('hidden');
+
+    if(memberListButton != null) {
+        memberListButton.classList.remove('active');
+        memberList.forEach(function (member) {
+        member.classList.add('hidden');
+        });
+    }
 
     eventButton.classList.remove('active');
     events.forEach(function (event) {
@@ -77,11 +121,18 @@ function showCalendar() {
 }
 
 function showChoiceEvent() {
-    updateAllEvents();
+    updateQueryInformation();
     choiceEventButton.classList.add('active');
     choiceEvents.forEach(function(event) {
         event.classList.remove('hidden');
     });
+
+    if(memberListButton != null) {
+        memberListButton.classList.remove('active');
+        memberList.forEach(function (member) {
+        member.classList.add('hidden');
+        });
+    }
 
     eventButton.classList.remove('active');
     events.forEach(function (event) {
@@ -186,7 +237,8 @@ function toggleChoiceButtons(eventId) {
     revertButton.classList.toggle('hidden');
 }
 
-function updateAllEvents() {
+function updateQueryInformation() {
     events = document.querySelectorAll('.card');
     choiceEvents = document.querySelectorAll('.choice-card');
+    memberList = document.querySelectorAll('.member');
 }

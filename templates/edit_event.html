@@ -1,7 +1,7 @@
 {% extends '_layout.html' %}
 
 {% block title %}Create Event{% endblock %}
-{%  block head_script %}{% endblock %}
+{%  block head_script %}<script src="/static/event_member_list.js" defer></script>{% endblock %}
 
 {% block main %}
 
@@ -38,5 +38,82 @@
 <form action="{{url_for('delete_event', event_id=event['event_id'],group_id=group['group_id']) }}" method="post">
     <button>Delete Event</button>
 </form>
+
+<nav class="feed-nav">
+    <ul>
+        <li id="activate-invited-members" class="active mb-3 text-lg md:text-xl">Invited Members</li>
+        <li id="activate-members" class="mb-3 text-lg md:text-xl">Members</li>
+    </ul>
+</nav>
+<input class="form-control" type="text" name="search-bar-invited" id="search-bar-invited" placeholder="Search Invited Members">
+<input class="form-control hidden" type="text" name="search-bar-uninvited" id="search-bar-uninvited" placeholder="Search Uninivited Members">
+<div class="member-list">
+    {% for member in members %}
+
+    {% if verify_member_is_invited_to_event(member['user_id'],event['event_id']) is true %}
+    <div class="invited-member" id="user-id-{{member['user_id']}}">
+        {% if member['profile_picture'] is none %}
+        <div class="profile-circle">
+            <img class="circle-img-default" src="/static/img/default-avatar.png" alt="profile icon">
+        </div>
+        {% else %}
+        <div class="profile-circle">
+            <img class="circle-img" src="/profile_picture/{{member['user_id']}}" alt="profile icon">
+        </div>
+        {% endif %}
+
+        <p class="w-25 member-name">{{ member['user_name'] }}</p>
+
+        {% if member.user_role|int == 0 %}
+            <p>Role: Owner</p>
+        {% elif member.user_role|int == 1 %}
+            <p>Role: Admin</p>
+        {% elif member.user_role|int == 2 %}
+            <p>Role: Member</p>
+        {% endif %}
+
+        {% set attending_status = get_attending_status(member['user_id'],event['event_id'])['attending'] %}
+        {% if attending_status is none %}
+        <p id="attending-status-{{member['user_id']}}">Attending: Pending</p>
+        {% elif attending_status is true %}
+        <p id="attending-status-{{member['user_id']}}">Attending: True</p>
+        {% else %}
+        <p id="attending-status-{{member['user_id']}}">Attending: False</p>
+        {% endif %}
+
+        <button class="invite-button btn btn-primary hidden" data-event-id="{{ event['event_id'] }}" data-user-id="{{ member['user_id'] }}">Invite User</button>
+        <button class="remove-invite-button btn btn-danger" data-event-id="{{ event['event_id'] }}" data-user-id="{{ member['user_id'] }}">Remove Invite</button>
+    </div>
+    {% else %}
+    <div class="member hidden" id="user-id-{{member['user_id']}}">
+        {% if member['profile_picture'] is none %}
+        <div class="profile-circle">
+            <img class="circle-img-default" src="/static/img/default-avatar.png" alt="profile icon">
+        </div>
+        {% else %}
+        <div class="profile-circle">
+            <img class="circle-img" src="/static/img/default-avatar.png" alt="profile icon">
+        </div>
+        {% endif %}
+
+        <p class="w-25">{{ member['user_name'] }}</p>
+
+        {% if member.user_role|int == 0 %}
+            <p>Role: Owner</p>
+        {% elif member.user_role|int == 1 %}
+            <p>Role: Admin</p>
+        {% elif member.user_role|int == 2 %}
+            <p>Role: Member</p>
+        {% endif %}
+
+        <p class="hidden" id="attending-status-{{member['user_id']}}"></p>
+
+        <button class="invite-button btn btn-primary" data-event-id="{{ event['event_id'] }}" data-user-id="{{ member['user_id'] }}">Invite User</button>
+        <button class="remove-invite-button btn btn-danger hidden" data-event-id="{{ event['event_id'] }}" data-user-id="{{ member['user_id'] }}">Remove Invite</button>
+    </div>
+    {% endif %}
+
+    {% endfor %}
+</div>
 
 {% endblock %}

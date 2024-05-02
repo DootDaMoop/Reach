@@ -295,7 +295,11 @@ def create_event_for_selected_group(group_id: int):
     # If an event is public then all the users in a group will be invited.
     if event['event_public']:
         event_repo.invite_all_users_in_group_to_event(group_id, event['event_id'])
-    # TODO: Just invite user_id who made the event
+    else:
+        event_repo.invite_user_to_event(session['user_id'], event['event_id'])
+        group = group_repo.get_group_by_id(group_id)
+        if session['user_id'] != group['user_id']:
+            event_repo.invite_user_to_event(group['user_id'],event['event_id'])
 
     return redirect(f'/groups/{group_id}/')
 
@@ -305,7 +309,9 @@ def get_event_edit_page(group_id: int, event_id: int):
     session['group_id'] = group_id
     group = group_repo.get_user_group_from_group_id(group_id)
     event = event_repo.get_event_by_event_id(event_id)
-    return render_template('edit_event.html', group=group, event=event)
+    members = event_repo.get_members_for_edit_event_page(group_id)
+    #members = group_repo.get_members_from_group_id(group_id)
+    return render_template('edit_event.html', group=group, event=event, members=members, verify_member_is_invited_to_event=event_repo.verify_member_is_invited_to_event, get_attending_status=event_repo.get_attending_status)
 
 @app.post('/groups/<int:group_id>/event_edit/<int:event_id>/')
 def update_edited_event(group_id: int, event_id: int):
@@ -326,7 +332,7 @@ def update_edited_event(group_id: int, event_id: int):
 
     event_repo.edit_event(event_id, event_name, event_description, event_public, event_start_date, event_end_date)
 
-    return redirect(session['prev_url'])
+    return redirect(url_for('get_event_edit_page', group_id=group_id, event_id=event_id))
 
 @app.post('/groups/<int:group_id>/event_edit/<int:event_id>/delete/')
 def delete_event(event_id: int, group_id: int):
@@ -342,12 +348,39 @@ def delete_event(event_id: int, group_id: int):
     event_repo.delete_event(event_id)
     return redirect(session['prev_url'])
 
+@app.post('/invite_to_event')
+def invite_to_event():
+    data = request.json
+    event_id = data['eventId']
+    user_id = data['userId']
+
+    if not event_id or not user_id:
+        return jsonify({'error': 'missing eventId or userId'}), 400
+    
+    event_repo.invite_user_to_event(user_id, event_id)
+
+    return jsonify({'message': 'User invited successfully'})
+
+@app.post('/remove_invite_to_event')
+def remove_invite_to_event():
+    data = request.json
+    event_id = data['eventId']
+    user_id = data['userId']
+
+    if not event_id or not user_id:
+        return jsonify({'error': 'missing eventId or userId'}), 400
+    
+    event_repo.remove_invited_user_from_event(user_id, event_id)
+    print('deleted user invite')
+
+    return jsonify({'message': 'User Invite Removed successfully'})
+
 @app.get('/profile/<int:user_id>')
 def profile(user_id: int):
     user = user_repo.get_user_from_user_id(user_id)
     return render_template('profile.html', user=user)
 
-@app.get('/profile/<int:user_id>/edit')
+@app.get('/profile/<int:user_id>/edit/')
 def get_edit_user_profile_page(user_id: int):
     if session['user_id'] == user_id:
         user = user_repo.get_user_from_user_id(session['user_id'])
@@ -355,9 +388,10 @@ def get_edit_user_profile_page(user_id: int):
     else:
         return 'Unauthorized Access', 401
 
-@app.post('/profile/<int:user_id>/edit')
+@app.post('/profile/<int:user_id>/edit/')
 def edit_user_profile(user_id: int):
     if user_id != session['user_id']:
+        print("NO HACKING")
         return redirect(url_for(get_edit_user_profile_page, user_id=session['user_id']))
     
     user = user_repo.get_user_from_user_id(session['user_id'])
@@ -367,13 +401,13 @@ def edit_user_profile(user_id: int):
     first_name = request.form.get('first_name')
     last_name = request.form.get('last_name')
 
-    if any(value is None or value == '' for value in [username, email, password]):
-        return redirect(url_for('get_edit_user_profile_page', user_id=session[user_id])) # TODO: Error Message
+    if any(value is None or value == '' for value in [username, email]):
+        return redirect(url_for('get_edit_user_profile_page', user_id=session['user_id'])) # TODO: Error Message
 
     profile_picture = user_repo.update_profile_picture(session['user_id'], request.files.get('profile_picture')) # TODO: Add separate var for pfp and combine to main update function
     user_repo.edit_user(user['user_id'], username, email, password, first_name, last_name)
 
-    return redirect(url_for(get_edit_user_profile_page, user_id=session['user_id']))
+    return redirect(url_for('get_edit_user_profile_page', user_id=session['user_id']))
 
 @app.get('/event_picture/<int:event_id>')
 def event_picture(event_id):
@@ -383,7 +417,7 @@ def event_picture(event_id):
 def profile_picture(user_id):
     return user_repo.get_profile_picture(user_id)
 
-@app.get('/group_picture/<int:user_id>')
+@app.get('/group_picture/<int:group_id>')
 def group_picture(group_id):
     return group_repo.get_group_picture(group_id)
 

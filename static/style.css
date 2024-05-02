@@ -68,7 +68,8 @@ nav ul li {
 /*- - - - - CARD STYLES - - - - -*/
 .card { /* General Card Designs */
     display: grid;
-    height: 260px;
+    min-height: 260px;
+    max-height: auto;
     grid-template-rows: 5fr 1fr;
     grid-template-columns: 30% 70%;
     box-shadow: 2px 3px 5px;
@@ -260,6 +261,47 @@ img {
     flex: 8;
     padding: 6px;
 }
+/* circle style */
+.circle {
+    width: 68px; /* change size here */
+    height: 68px; /* change size here */
+    top: 0.7%; 
+    right: 2%;
+    position: absolute;
+    background-color: black;
+    display: flex;
+    border-radius: 50%;
+    justify-content: center;
+    align-items: center;
+    border: solid white 2px;
+}
+.profile-circle {
+    width: 68px; /* change size here */
+    height: 68px; /* change size here */
+    display: flex;
+    border-radius: 50%;
+    justify-content: center;
+    align-items: center;
+}
+.circle-img-default {
+    width: 99%;
+    height: 99%;
+    mix-blend-mode: multiply;
+    position: relative;
+    shape-image-threshold: inherit;
+    border-radius: 50%;
+}
+.circle-img {
+    width: 99%;
+    height: 99%;
+    position: relative;
+    shape-image-threshold: inherit;
+    border-radius: 50%;
+}
+.circle-img:hover {
+    cursor: pointer;
+}
+
 .edit-form {
     display: none;
     background-color: aqua;
@@ -308,12 +350,24 @@ cursor: pointer;
     border-radius: 5px;
     border: solid 1px;
     align-items: center;
-    justify-content: space-around;
+    justify-content: space-evenly;
     box-shadow: 1px 1px;
     background: rgb(230, 230, 230);
 }
 .member:hover {
     background: rgb(178, 178, 178); /* Scale up on hover */
+}
+.invited-member {
+    margin: 0px 16px;
+    display: flex;
+    flex-direction: row;
+    height: 80px;
+    border-radius: 5px;
+    border: solid 1px;
+    align-items: center;
+    justify-content: space-evenly;
+    box-shadow: 1px 1px;
+    background: rgb(230, 230, 230);
 }
 .dropdown-item:hover {
     background-color: rgb(178, 178, 178);
