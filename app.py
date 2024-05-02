@@ -376,7 +376,7 @@ def profile(user_id: int):
     user = user_repo.get_user_from_user_id(user_id)
     return render_template('profile.html', user=user)
 
-@app.get('/profile/<int:user_id>/edit')
+@app.get('/profile/<int:user_id>/edit/')
 def get_edit_user_profile_page(user_id: int):
     if session['user_id'] == user_id:
         user = user_repo.get_user_from_user_id(session['user_id'])
@@ -384,9 +384,10 @@ def get_edit_user_profile_page(user_id: int):
     else:
         return 'Unauthorized Access', 401
 
-@app.post('/profile/<int:user_id>/edit')
+@app.post('/profile/<int:user_id>/edit/')
 def edit_user_profile(user_id: int):
     if user_id != session['user_id']:
+        print("NO HACKING")
         return redirect(url_for(get_edit_user_profile_page, user_id=session['user_id']))
     
     user = user_repo.get_user_from_user_id(session['user_id'])
@@ -396,11 +397,25 @@ def edit_user_profile(user_id: int):
     first_name = request.form.get('first_name')
     last_name = request.form.get('last_name')
 
-    if any(value is None or value == '' for value in [username, email, password]):
+    if any(value is None or value == '' for value in [username, email]):
         return redirect(url_for('get_edit_user_profile_page', user_id=session['user_id'])) # TODO: Error Message
 
+    profile_picture = user_repo.update_profile_picture(session['user_id'], request.files.get('profile_picture')) # TODO: Add separate var for pfp and combine to main update function
     user_repo.edit_user(user['user_id'], username, email, password, first_name, last_name)
-    return redirect(url_for(get_edit_user_profile_page, user_id=session['user_id']))
+
+    return redirect(url_for('get_edit_user_profile_page', user_id=session['user_id']))
+
+@app.get('/event_picture/<int:event_id>')
+def event_picture(event_id):
+    return event_repo.get_event_picture(event_id)
+
+@app.get('/profile_picture/<int:user_id>')
+def profile_picture(user_id):
+    return user_repo.get_profile_picture(user_id)
+
+@app.get('/group_picture/<int:group_id>')
+def group_picture(group_id):
+    return group_repo.get_group_picture(group_id)
 
 @app.get('/groups/create/')
 @login_is_required
