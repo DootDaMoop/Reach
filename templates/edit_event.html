@@ -5,38 +5,38 @@
 
 {% block main %}
 
-<form action="{{ url_for('update_edited_event', group_id=group['group_id'], event_id=event['event_id']) }}" method="post">
+<form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" action="{{ url_for('update_edited_event', group_id=group['group_id'], event_id=event['event_id']) }}" method="post">
     <div>
-        <label for="event_name">Event Name:</label>
-        <input type="text" id="event_name " name="event_name" value="{{event['event_name']}}" required>
+        <label class="block text-gray-500 font-bold mb-1 md:mb-0 pr-4" for="event_name">Event Name:</label>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-3" type="text" id="event_name " name="event_name" value="{{event['event_name']}}" required>
     </div>
     <div>
-        <label for="event_description">Event Description:</label>
-        <input type="text" id="event_description" name="event_description" value="{{event['event_description']}}" required>
+        <label class="block text-gray-500 font-bold mb-1 md:mb-0 pr-4" for="event_description">Event Description:</label>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-3" type="text" id="event_description" name="event_description" value="{{event['event_description']}}" required>
     </div>
     <div>
-        <label for="is_event_public">Is Event Public:</label>
+        <label class="block text-gray-500 font-bold mb-1 md:mb-0 pr-4" for="is_event_public">Is Event Public:</label>
         {% if event['event_public'] %}
-        <input type="checkbox" id="is_event_public" name="is_event_public" checked>
+        <input class="mr-2 leading-tight" type="checkbox" id="is_event_public" name="is_event_public" checked>
         {% else %}
-        <input type="checkbox" id="is_event_public" name="is_event_public">
+        <input class="mr-2 leading-tight" type="checkbox" id="is_event_public" name="is_event_public">
         {% endif %}
     </div>
     <div>
-        <label for="event_start_date">Event Start Date:</label>
+        <label class="block text-gray-500 font-bold mb-1 md:mb-0 pr-4" for="event_start_date">Event Start Date:</label>
         <input class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-3" type="datetime-local" id="event_start_date" name="event_start_date" value="{{event['event_start_timestamp']}}" required>
     </div>
     <div>
-        <label for="event_end_date">Event End Date:</label>
+        <label class="block text-gray-500 font-bold mb-1 md:mb-0 pr-4" for="event_end_date">Event End Date:</label>
         <input class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-3" type="datetime-local" id="event_end_date" name="event_end_date" value="{{event['event_end_timestamp']}}" required>
     </div>
     <div>
-        <button type="submit">Edit Event</button>
+        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-2" type="submit">Edit Event</button>
     </div>
 </form>
 
 <form action="{{url_for('delete_event', event_id=event['event_id'],group_id=group['group_id']) }}" method="post">
-    <button>Delete Event</button>
+    <button class="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900 ml-4 mb-4">Delete Event</button>
 </form>
 
 <nav class="feed-nav">
