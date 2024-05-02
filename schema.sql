@@ -95,6 +95,3 @@ INSERT INTO event (user_id, group_id, event_name, event_description, event_publi
 VALUES (1, 1, 'Birthday Bash', 'WOOO BIRTHDAY!!!', TRUE , '2024-06-23 00:00:00', '2024-06-24 00:00:00');
 
 -- END OF INSERTIONS
-
--- Delete Statements: Event works as intended, group should be allowed to delete events associated with group (cascade delete is ok)
--- user will throw errors, don't want to delete entire groups if admin deletes account 

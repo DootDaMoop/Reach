@@ -143,8 +143,6 @@ def get_group_by_id(group_id: str) -> dict:
                             ''', [group_id])
             return cursor.fetchone()
 
-
-
 def get_group_description_by_id(group_id: str) -> str:
     pool = get_pool()
     with pool.connection() as conn:
@@ -164,7 +162,6 @@ def get_group_description_by_id(group_id: str) -> str:
                 return "Group description not found."
             
 
-
 def get_group_public_status(group_id: str) -> bool:
     pool = get_pool()
     with pool.connection() as conn:
@@ -182,7 +179,6 @@ def get_group_public_status(group_id: str) -> bool:
                 return result[0]  # Assuming 'group_public' is the first column returned
             else:
                 raise ValueError("Group not found with the specified ID")
-
 
 
 def get_group_name_by_id(group_id: str) -> str:
@@ -205,7 +201,6 @@ def get_group_name_by_id(group_id: str) -> str:
             
 
 
-
 def get_members_and_roles(group_id: str):
     pool = get_pool()
     with pool.connection() as conn:
@@ -225,7 +220,6 @@ def get_members_and_roles(group_id: str):
                 return members
             else:
                 return "No members found for this group."
-
 
 
 
@@ -292,6 +286,72 @@ def get_members_from_group_id(group_id: str):
 
 
 # TODO: Delete a group
+#Deleting the entry from "group" table MUST BE EXECUTED LAST
+def delete_group(group_id: int):
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=dict_row) as cur:
+            cur.execute('''
+                        DELETE FROM
+                            "group"
+                        WHERE group_id = %s
+                        RETURNING group_id
+                        ''', [group_id])
+            group_id = cur.fetchone()
+            if group_id is None:
+                raise Exception('Failed to delete group.')
+            return {
+                'group_id': group_id
+            }
+        
+def delete_group_from_membership(group_id: int):
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=dict_row) as cur:
+            cur.execute('''
+                        DELETE FROM
+                            membership
+                        WHERE group_id = %s
+                        RETURNING group_id
+                        ''', [group_id])
+            group_id = cur.fetchone()
+            if group_id is None:
+                raise Exception('Failed to delete group from membership table.')
+            return {
+                'group_id': group_id
+            }
+        
+def delete_group_from_collaboration(group_id: int):
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=dict_row) as cur:
+            cur.execute('''
+                        DELETE FROM
+                            collaboration
+                        WHERE group_id = %s
+                        RETURNING group_id
+                        ''', [group_id])
+            group_id = cur.fetchone()
+            return {
+                'group_id': group_id
+            }
+        
+def delete_group_from_event(group_id: int):
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=dict_row) as cur:
+            cur.execute('''
+                        DELETE FROM
+                            event
+                        WHERE group_id = %s
+                        RETURNING group_id
+                        ''', [group_id])
+            group_id = cur.fetchone()
+            if group_id is None:
+                raise Exception('Failed to delete group from event table.')
+            return {
+                'group_id': group_id
+            }
 
 
 # TODO: Add Member
