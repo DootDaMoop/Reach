@@ -5,7 +5,7 @@
 
 {% block main %}
 <!-- Custom Login Form -->
-<div>
+<div class="p-8">
     <h2 class="text-3xl font-bold">Login with Email</h2>
     <form action="/login_manual" method="post" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
         <div>
@@ -27,16 +27,15 @@
 <!-- Registration Link -->
 
 <!-- Google Sign In -->
-<div>
-    <a href='/google_login'><button type="button" class="login-with-google-btn" >Sign in with Google</button></a>
-</div>
-
-
-<div>
-    <a href="/registration" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center mb-4 mt-4 ml-4">Register</a>
-</div>
-
-<div>
-    <a href="/calendar" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center mb-4 ml-4">Calendar</a>
+<div class="p-8">
+    <div>
+        <a href='/google_login' class="ml-4"><button class="login-with-google-btn">Sign in with Google</button></a>
+    </div>
+    <div>
+        <a href="/registration" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center mb-4 mt-4 ml-4">Register</a>
+    </div>
+    <div>
+        <a href="/calendar" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center mb-4 ml-4">Calendar</a>
+    </div>
 </div>
 {% endblock %}

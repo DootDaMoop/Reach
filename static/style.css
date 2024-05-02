@@ -10,12 +10,15 @@ li:hover {
     cursor: pointer;
 }
 header {
-    align-content: center;    
+    align-content: center;
+    height: 80px; 
+    border-bottom: solid gray 2px;
 }
 footer {
     position: fixed;
     bottom: 0;
     width: 100%;
+    z-index: 9999;
 }
 .nav-grid ul{
     display: flex;
@@ -230,31 +233,31 @@ img {
     padding: 6px;
 }
 
+@keyframes menuSlider {
+    from {
+        width: 0px;
+    }
+    to{
+        width: 300px;
+    }
+}
 
-/* - - - - - copy and paste css from edit.ccss - - - - - */
-
-.group-edit-card {
-    border: solid 1px;
-    margin: 16px;
+/* - - - - - profile styles - - - - - */
+.profile-menu {
+    position: absolute;
+    right: 0;
+    height: 100%;
+    width: 20%;
+    background-color: #161b22;
+    z-index: 9998;
+    animation: menuSlider 300ms forwards; /* Apply the menuSlider animation with a duration of 1 second and ease-in timing function */
+}
+.list-group {
     display: flex;
-    height: 200px;
-    border-radius: 5px;
-    overflow: scroll;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
-.edit-icon:hover {
-    cursor: pointer;
-    scale: 1.05;
-}
-.group-image-container {
-    flex: 1;
-    flex-wrap: wrap;
-    align-content: center;
-    padding-left: 8px;
-}
-.spec {
-    margin: auto;
-}
-
 .group-info {
     /* flex-grow: 2;
     background-color: aqua; */
@@ -414,6 +417,7 @@ cursor: pointer;
 }
 
 /*LOGIN WITH GOOGLE BUTTON */
+/*LOGIN WITH GOOGLE BUTTON */
 .login-with-google-btn {
     transition: background-color .3s, box-shadow .3s;
     padding: 12px 16px 12px 42px;
@@ -454,8 +458,40 @@ cursor: pointer;
     cursor: not-allowed;
     }
 }
-/*- - - - - kick confirm design - - - - - */
 
-/* - - - - - edit form design - - - - - - */
+.list-group-item-action {
+    background-color: transparent;
+    color: white;
+}
+.list-group-item-action:hover {
+    color: white;
+    background-color: rgb(79, 79, 79)
+}
+/* - - - - - - end of profile styles - - - - - * /
+/* circle style */
+.circle {
+    width: 68px; /* change size here */
+    height: 68px; /* change size here */
+    top: 0.7%; 
+    right: 2%;
+    position: absolute;
+    background-color: black;
+    display: flex;
+    border-radius: 50%;
+    justify-content: center;
+    align-items: center;
+    border: solid white 2px;
+}
+.circle-img {
+    width: 99%;
+    height: 99%;
+    position: relative;
+    shape-image-threshold: inherit;
+    border-radius: 50%;
+}
+.circle-img:hover {
+    cursor: pointer;
+}
+/* - - - - - - END OF circle style - - - - - - -*/
 
 

@@ -43,15 +43,27 @@
                 </div>
             </div>
             <div class="group-options">
-                {% if membership is none %}
-                <button class="btn btn-primary mr-2 mb-2">Join</button>
-                {% elif membership.user_role == 0 or membership.user_role == 1 %}
-                <button class="btn btn-secondary"><a href="/groups/{{ group['group_id'] }}/create_event/">Add Event</a></button>
-                <button class="btn btn-secondary"><a href="/groups/{{ group['group_id'] }}/group_edit/">Edit</a></button>
-                <button class="btn btn-secondary">Message</button>
-                <button class="btn btn-danger">Leave</button>
-                {% endif %}
+                    {% if membership is none %}
+                    <form action="{{url_for('group_join', group_id=group['group_id'])}}" method="post">
+                        {% if group.group_public == true %}
+                        <button type="submit" name="join" class="btn btn-primary">Join</button>
+                        
+                        {% else %}
+                        <button type="submit" name="join" class="btn btn-primary">Request Join</button>
+                        {% endif %}
+                    </form>
+                    {% elif membership.user_role == 0 or membership.user_role == 1 %}
+                    <button class="btn btn-secondary"><a href="/groups/{{ group['group_id'] }}/create_event/">Add Event</a></button>
+                    <button class="btn btn-secondary"><a href="/groups/{{ group['group_id'] }}/group_edit/">Edit</a></button>
+
                 
+                {% endif %}
+                {% if membership is not none %}
+                <form action="{{url_for('group_leave', group_id=group['group_id'])}}" method="post">
+                    <button type="submit" name="leave" class="btn btn-danger">Leave</button>
+                </form>
+                
+                {% endif %}
             </div>
         </div>
         <nav class="feed-nav">
