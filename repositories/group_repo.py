@@ -286,7 +286,7 @@ def get_members_from_group_id(group_id: str):
 
 
 # TODO: Delete a group
-#Deleting the entry from "group" table MUST BE EXECUTED LAST
+#group_is has cascade delete on it so it should delete everything from collaboration, membership, event 
 def delete_group(group_id: int):
     pool = get_pool()
     with pool.connection() as conn:
@@ -303,56 +303,6 @@ def delete_group(group_id: int):
             return {
                 'group_id': group_id
             }
-        
-def delete_group_from_membership(group_id: int):
-    pool = get_pool()
-    with pool.connection() as conn:
-        with conn.cursor(row_factory=dict_row) as cur:
-            cur.execute('''
-                        DELETE FROM
-                            membership
-                        WHERE group_id = %s
-                        RETURNING group_id
-                        ''', [group_id])
-            group_id = cur.fetchone()
-            if group_id is None:
-                raise Exception('Failed to delete group from membership table.')
-            return {
-                'group_id': group_id
-            }
-        
-def delete_group_from_collaboration(group_id: int):
-    pool = get_pool()
-    with pool.connection() as conn:
-        with conn.cursor(row_factory=dict_row) as cur:
-            cur.execute('''
-                        DELETE FROM
-                            collaboration
-                        WHERE group_id = %s
-                        RETURNING group_id
-                        ''', [group_id])
-            group_id = cur.fetchone()
-            return {
-                'group_id': group_id
-            }
-        
-def delete_group_from_event(group_id: int):
-    pool = get_pool()
-    with pool.connection() as conn:
-        with conn.cursor(row_factory=dict_row) as cur:
-            cur.execute('''
-                        DELETE FROM
-                            event
-                        WHERE group_id = %s
-                        RETURNING group_id
-                        ''', [group_id])
-            group_id = cur.fetchone()
-            if group_id is None:
-                raise Exception('Failed to delete group from event table.')
-            return {
-                'group_id': group_id
-            }
-
 
 # TODO: Add Member
 
@@ -387,4 +337,25 @@ def change_member_role(user_id: str, group_id: str, new_role: str) -> bool:
             ''', [new_role, user_id, group_id])
             conn.commit()
             return cursor.rowcount > 0  # Returns True if at least one row was updated
+
+#Finding all admins in a group
+def get_admin_member_and_role(group_id: int):
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=dict_row) as cursor:
+            cursor.execute('''
+                SELECT 
+                    usr.user_id, mem.user_role
+                FROM 
+                    "user" usr
+                JOIN 
+                    membership mem ON usr.user_id = mem.user_id
+                WHERE 
+                    mem.group_id = %s AND mem.user_role = 1;
+            ''', [group_id])
+            members = cursor.fetchone()
+            if members:
+                return members
+            else:
+                return "No admins found for this group."
 

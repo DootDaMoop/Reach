@@ -195,11 +195,9 @@ def get_user_role_by_group_id(user_id: str, group_id: str):
             else:
                 return "User role not found in this group."
 
-
-
-
-#DELETE FUNCTIONS FOR DELETE USER
-#Run delete user last
+#Delete user 
+#cascades down to membership, event and pending 
+#RUN AFTER CHANGING OWNERSHIP
 def delete_user(user_id: int):
     pool = get_pool()
     with pool.connection() as conn:
@@ -212,44 +210,7 @@ def delete_user(user_id: int):
                     ''', [user_id])
             group_id = cur.fetchone()
             if group_id is None:
-                raise Exception('Failed to User.')
+                raise Exception('Failed to delete User.')
             return {
                 'user_id': user_id
             }
-
-
-#delete from: membership, event, pending, GROUP
-def delete_user_from_pending(user_id: int):
-    pool = get_pool()
-    with pool.connection() as conn:
-        with conn.cursor(row_factory=dict_row) as cur:
-            cur.execute('''
-                        DELETE FROM
-                            pending
-                        WHERE user_id = %s
-                        RETURNING user_id
-                        ''', [user_id])
-            event_id = cur.fetchone()
-            if user_id is None:
-                raise Exception('Failed to delete user from collaboration.')
-            return {
-                'user_id': user_id
-            }
-        
-def delete_user_from_membership(user_id: int):
-    pool = get_pool()
-    with pool.connection() as conn:
-        with conn.cursor(row_factory=dict_row) as cur:
-            cur.execute('''
-                        DELETE FROM
-                            membership
-                        WHERE user_id = %s
-                        RETURNING user_id
-                        ''', [user_id])
-            user_id = cur.fetchone()
-            if user_id is None:
-                raise Exception('Failed to delete group from membership table.')
-            return {
-                'user_id': user_id
-            }
-        

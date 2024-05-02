@@ -165,6 +165,8 @@ def edit_event(event_id: int, event_name: str, event_description: str, event_pub
                 'event_id': event_id
             }
 
+
+#event_id has cascade delete on it so it should delete everythig from pending and collaboration
 def delete_event(event_id: int):
     pool = get_pool()
     with pool.connection() as conn:
@@ -178,39 +180,6 @@ def delete_event(event_id: int):
             event_id = cur.fetchone()
             if event_id is None:
                 raise Exception('Failed to delete event.')
-            return {
-                'event_id': event_id
-            }
-
-#RUN THESE TWO FUNCTIONS BEFORE RUNNING delete_event
-def delete_event_from_collab(event_id: int):
-    pool = get_pool()
-    with pool.connection() as conn:
-        with conn.cursor(row_factory=dict_row) as cur:
-            cur.execute('''
-                        DELETE FROM
-                            collaboration
-                        WHERE event_id = %s
-                        RETURNING event_id
-                        ''', [event_id])
-            event_id = cur.fetchone()
-            return {
-                'event_id': event_id
-            }
-
-def delete_event_from_pending(event_id: int):
-    pool = get_pool()
-    with pool.connection() as conn:
-        with conn.cursor(row_factory=dict_row) as cur:
-            cur.execute('''
-                        DELETE FROM
-                            pending
-                        WHERE event_id = %s
-                        RETURNING event_id
-                        ''', [event_id])
-            event_id = cur.fetchone()
-            if event_id is None:
-                raise Exception('Failed to delete event from collaboration.')
             return {
                 'event_id': event_id
             }
