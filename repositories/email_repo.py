@@ -3,36 +3,26 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import datetime as dt
 import time
+import os
 import threading
 from repositories import user_repo, group_repo, event_repo
 
-def send_email():
+def send_email(receiver_email: str, subject: str, HTML_message: str):
     smtp_server = "smtp.gmail.com"
     port = 587  
-    sender_email = "reach543210@gmail.com"
-    receiver_email = "ynieban@uncc.edu"
-    password = "sfjw uond wezc fnsl" #APP PASSWORD; Goes in .env
+    sender_email = "reach202425@gmail.com" # Default Email for Reach
+    password = os.getenv('EMAIL_PASSWORD',)
 
     server = smtplib.SMTP(smtp_server, port)
     server.starttls()
     server.login(sender_email, password)
 
     message = MIMEMultipart('alternative')
-    message["Subject"] = "cum 4.0"      #subject of email
+    message["Subject"] = subject      #subject of email
     message["From"] = sender_email      
     message["To"] = receiver_email
 
-    html = """\
-    <html>
-    <head></head>
-    <body>
-        <p>cum<br>
-        cummuc<br>
-        cum time <a href="http://www.sdfsfdsfdf.com">link</a> you wanted.
-        </p>
-    </body>
-    </html>
-    """
+    html = HTML_message
 
     content = MIMEText(html, 'html')
     message.attach(content)
@@ -40,9 +30,8 @@ def send_email():
     server.sendmail(sender_email, receiver_email, message.as_string())
     server.quit()
 
-def schedule_email(event_time_str, hours_before = 0, minutes_before=0, seconds_before=0):
-
-    event_time = dt.datetime.strptime(event_time_str, '%Y-%m-%d %H:%M:%S')
+def schedule_email(event_start_timestamp, hours_before = 0, minutes_before=0, seconds_before=0):
+    event_time = dt.datetime.strptime(event_start_timestamp, '%Y-%m-%d %H:%M:%S')
     
     send_time = event_time - dt.timedelta(hours=hours_before, minutes=minutes_before, seconds=seconds_before)
     
