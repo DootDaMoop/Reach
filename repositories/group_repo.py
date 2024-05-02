@@ -381,3 +381,4 @@ def change_member_role(user_id: str, group_id: str, new_role: str) -> bool:
             conn.commit()
             return cursor.rowcount > 0  # Returns True if at least one row was updated
 
+

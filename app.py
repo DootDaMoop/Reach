@@ -417,7 +417,7 @@ def create_group_page():
     else:
         return message, 400
     
-@app.get('/event')
+@app.get('/event') 
 def event():
     return render_template("event.html")
 
