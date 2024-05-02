@@ -35,15 +35,14 @@
 <div class="member-list">
     <h1 class="mx-4">Members: </h1>
     {% for member in members %}
-    
     <div class="member">
-        <img src="" alt="profile icon">
-        <p class="w-25">{{ member.user_name }}</p>
-        <p>Role: {{ member.user_role }}</p>
+        <img src="../static/img/default-avatar.png" alt="profile icon">
+        <p class="w-25">{{ member['user_name'] }}</p>
+        <p>Role: {{ member['user_role'] }}</p>
         <div class="dropdown">
                 <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa-solid fa-ellipsis"></i></button>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a class="dropdown-item" href="/profile/{{ member.user_id }}"> Profile</a>
+                    <a class="dropdown-item" href="/profile/{{ member['user_id'] }}"> Profile</a>
                     <a class="dropdown-item" > Role</a>
                     <a class="dropdown-item kick-user" > Kick</a>
                 </div>

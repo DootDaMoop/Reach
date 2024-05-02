@@ -271,16 +271,18 @@ def update_group_status(group_id: str, new_status: bool):
             return cursor.rowcount > 0  # Returns True if at least one row was updated
 
 
-def get_members_from_group_id(group_id: str):
+def get_members_from_group_id(group_id: int):
     pool = get_pool()
     with pool.connection() as conn:
         with conn.cursor(row_factory=dict_row) as cursor:
             cursor.execute('''
-                            SELECT 
-                                user_id
-                            FROM 
+                            SELECT
+                                user_name, user_role, profile_picture
+                            FROM
                                 membership
-                            WHERE 
+                            JOIN
+                                "user" u on membership.user_id = u.user_id
+                            WHERE
                                 group_id = %s;
                             ''', [group_id])
             return cursor.fetchall() 
