@@ -185,8 +185,12 @@ def group_join(group_id: int):
 @app.post('/groups/<int:group_id>/leave')
 def group_leave(group_id: int):
     if(group_repo.check_membership(session['user_id'], group_id) is not None): # checks if the user exist, if so remove them
-        group_repo.remove_member_from_group(session['user_id'], group_id)        
-    return redirect(url_for('group', group_id=group_id))
+        group_repo.remove_member_from_group(session['user_id'], group_id)    
+        
+    member_count = group_repo.get_member_count_from_group_id(group_id) # member count of group 
+    if(member_count == 0):
+        group_repo.delete_group(group_id) # deletes a group from database if member count is 0
+    return redirect('/home') # redirect to home page
 
 @app.get("/groups/<group_id>/group_edit/")
 def edit(group_id: str):
