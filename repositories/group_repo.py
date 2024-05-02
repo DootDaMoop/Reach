@@ -1,6 +1,11 @@
 from repositories.db import get_pool
 from psycopg.rows import dict_row
-from typing import Any
+from typing import Tuple, Union, Dict, Any
+from werkzeug.datastructures import FileStorage
+import re
+import bcrypt
+import logging
+from flask import Response
 
 def group_exists(group_name: str) -> bool:
     pool = get_pool()
@@ -212,7 +217,7 @@ def get_members_and_roles(group_id: str):
         with conn.cursor(row_factory=dict_row) as cursor:
             cursor.execute('''
                 SELECT 
-                    usr.user_name, mem.user_role
+                    usr.user_id, usr.user_name, mem.user_role
                 FROM 
                     "user" usr
                 JOIN 
@@ -351,4 +356,37 @@ def change_member_role(user_id: str, group_id: str, new_role: str) -> bool:
             ''', [new_role, user_id, group_id])
             conn.commit()
             return cursor.rowcount > 0  # Returns True if at least one row was updated
+
+
+def update_group_picture(group_id: int, group_picture: FileStorage) -> bool:
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor() as cur:
+            try:
+                # Read the bytes from the FileStorage object
+                picture_bytes = group_picture.read()
+
+                cur.execute('''
+                    UPDATE "group"
+                    SET group_picture = %(group_picture)s
+                    WHERE group_id = %(group_id)s
+                ''', {'group_picture': picture_bytes, 'group_id': group_id})
+                conn.commit()
+                return True
+            except Exception as e:
+                logging.error("Error updating profile picture: %s", e)
+                conn.rollback()
+                return False
+
+
+def get_group_picture(group_id: int):
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=dict_row) as cur:  # Ensure dict_row is used
+            cur.execute('SELECT group_picture FROM "group" WHERE group_id = %s', (group_id,))
+            row = cur.fetchone()
+            if row and row['group_picture']:
+                return Response(row['group_picture'], mimetype='image/jpeg')
+            else:
+                return "No profile picture found", 404
 
