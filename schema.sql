@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS "user" (
     user_password   VARCHAR(255),
     user_first_name VARCHAR(255),
     user_last_name  VARCHAR(255),
+    user_description    VARCHAR(1000),
     google_id       VARCHAR(255) UNIQUE,
     profile_picture BYTEA,
     PRIMARY KEY (user_id)
