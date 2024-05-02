@@ -15,11 +15,9 @@
             <li><img src="" alt=""></li>
             <li>Username: {{  user['user_name'] }}</li>
             <br>
-            <li>Name: {{  user['user_first_name']  }}</li>
+            <li>Name: {{  user['user_first_name'] + ' ' + user['user_last_name']  }}</li>
             <li>Email: {{  user['user_email']  }}</li>
             <br>
-            <li>Instagram: </li>
-            <li>Snapchat: </li>
         </ul> 
     </div>
     {% if session['user_id'] == user['user_id'] %}

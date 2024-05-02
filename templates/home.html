@@ -19,29 +19,80 @@
             <nav class="feed-nav">
                 <ul>
                     <li id="activate-event"class="active mb-3 text-lg md:text-xl">Events</li>
+                    <li id="activate-choice-events" class="mb-3 text-lg md:text-xl">Accepted/Declined Events</li>
                     <li id="activate-calendar" class="mb-3 text-lg md:text-xl">Calendar</li>
                 </ul>
             </nav>
-        <div class="card border-bold rounded">
-            <div class="card-image"><img class="card-img-top" src="/static/img/Image1.png" alt="Image"></div>
-            <div class="card-content">
-                <h2>DGC Cultural Kick-Off</h2>
-            <p>Vibrant celebration of diversity, food, and performnace! Provided by organizations of the Diversified Greek Council!</p>
-            </div>
+        {% for event in home_events %}
+        {% if event['attending'] is none %}
+        <div class="card border-bold rounded" id="event-id-{{event['event_id']}}">
+            <div class="card-image"><img src="/static/img/Image1.png" alt="Image"></div>
+                <div class="card-content">
+                    <h2>{{ event['event_name'] }}</h2>
+                    <p>{{ event['event_description'] }}</p>
+                    <p>Start Date: {{ event['event_start_timestamp'].strftime('%Y-%m-%d %I:%M:%S %p') }}</p>
+                    <p>End Date: {{ event['event_end_timestamp'].strftime('%Y-%m-%d %I:%M:%S %p') }}</p>
+                    {% if event['event_public'] is false %}
+                    <p>This is a private event!</p>
+                    {% endif %}
+                </div>
             <div class="card-buttons">
-                <button>Accept</button><button>Decline</button><button>Edit</button>
+                <button class="accept-button btn btn-secondary" data-event-id="{{ event['event_id'] }}" data-user-id="{{ session['user_id'] }}">Accept</button>
+                <button class="decline-button btn btn-secondary" data-event-id="{{ event['event_id'] }}" data-user-id="{{ session['user_id'] }}">Decline</button>
+                <button class="revert-button hidden btn btn-secondary" data-event-id="{{ event['event_id'] }}" data-user-id="{{ session['user_id'] }}">Revert</button>
+                {% if (verify_admin_user(session['user_id'], event['group_id'], event['event_id'])['user_role'] == 0) or 
+                (verify_admin_user(session['user_id'], event['group_id'], event['event_id'])['user_role'] == 1) %}
+                <button class="btn btn-secondary"><a href="/groups/{{event['group_id']}}/event_edit/{{event['event_id']}}/">Edit</a></button>
+                {% endif %} 
             </div>
         </div>
-        <div class="card border-bold rounded">
-            <div class="card-image"><img src="/static/img/35322171_8_1sasa11.jpg" alt="Image"></div>
-            <div class="card-content">
-                <h2>DGC Cultural Kick-Off</h2>
-                <p>Vibrant celebration of diversity, food, and performnace! Provided by organizations of the Diversified Greek Council!</p>
-            </div>
+        {% elif event['attending'] is true %}
+        <div class="choice-card accepted border-bold rounded hidden" id="event-id-{{event['event_id']}}">
+            <div class="card-image"><img src="/static/img/Image1.png" alt="Image"></div>
+                <div class="card-content">
+                    <h2>{{ event['event_name'] }}</h2>
+                    <p>{{ event['event_description'] }}</p>
+                    <p>Start Date: {{ event['event_start_timestamp'].strftime('%Y-%m-%d %I:%M:%S %p') }}</p>
+                    <p>End Date: {{ event['event_end_timestamp'].strftime('%Y-%m-%d %I:%M:%S %p') }}</p>
+                    {% if event['event_public'] is false %}
+                    <p>This is a private event!</p>
+                    {% endif %}
+                </div>
             <div class="card-buttons">
-                <button>Accept</button><button>Decline</button><button>Edit</button>
+                <button class="accept-button hidden btn btn-secondary" data-event-id="{{ event['event_id'] }}" data-user-id="{{ session['user_id'] }}">Accept</button>
+                <button class="decline-button hidden btn btn-secondary" data-event-id="{{ event['event_id'] }}" data-user-id="{{ session['user_id'] }}">Decline</button>
+                <button class="revert-button btn btn-secondary" data-event-id="{{ event['event_id'] }}" data-user-id="{{ session['user_id'] }}">Revert</button>
+                {% if (verify_admin_user(session['user_id'], event['group_id'], event['event_id'])['user_role'] == 0) or 
+                (verify_admin_user(session['user_id'], event['group_id'], event['event_id'])['user_role'] == 1) %}
+                <button class="btn btn-secondary"><a href="/groups/{{event['group_id']}}/event_edit/{{event['event_id']}}/">Edit</a></button>
+                {% endif %}
             </div>
         </div>
+        {% else %}
+        <div class="choice-card declined border-bold rounded hidden" id="event-id-{{event['event_id']}}">
+            <div class="card-image"><img src="/static/img/Image1.png" alt="Image"></div>
+                <div class="card-content">
+                    <h2>{{ event['event_name'] }}</h2>
+                    <p>{{ event['event_description'] }}</p>
+                    <p>Start Date: {{ event['event_start_timestamp'].strftime('%Y-%m-%d %I:%M:%S %p') }}</p>
+                    <p>End Date: {{ event['event_end_timestamp'].strftime('%Y-%m-%d %I:%M:%S %p') }}</p>
+                    {% if event['event_public'] is false %}
+                    <p>This is a private event!</p>
+                    {% endif %}
+                </div>
+            <div class="card-buttons">
+                <button class="accept-button hidden btn btn-secondary" data-event-id="{{ event['event_id'] }}" data-user-id="{{ session['user_id'] }}">Accept</button>
+                <button class="decline-button hidden btn btn-secondary" data-event-id="{{ event['event_id'] }}" data-user-id="{{ session['user_id'] }}">Decline</button>
+                <button class="revert-button btn btn-secondary" data-event-id="{{ event['event_id'] }}" data-user-id="{{ session['user_id'] }}">Revert</button>
+                {% if (verify_admin_user(session['user_id'], event['group_id'], event['event_id'])['user_role'] == 0) or 
+                (verify_admin_user(session['user_id'], event['group_id'], event['event_id'])['user_role'] == 1) %}
+                <button class="btn btn-secondary"><a href="/groups/{{event['group_id']}}/event_edit/{{event['event_id']}}/">Edit</a></button>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+
         <div id="calendar" class="hidden">
             <script src="{{ url_for('static', filename='calendar.js') }}"></script>
             <div>
