@@ -40,6 +40,7 @@
     background-color: aqua;
     color: white;
 }
-#calendar {
-    
+
+.has-event {
+    background-color: aqua;
 }
