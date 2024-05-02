@@ -111,22 +111,22 @@ def get_groups_from_user_id(user_id: str): # This returns all groups a user is a
                             ''', [user_id])
             return cursor.fetchall()
 
-def get_group_and_user_from_group_and_user_id(user_id: str, group_id: str):
+def get_group_and_user_from_group_id(group_id: str):
     pool = get_pool()
     with pool.connection() as conn:
         with conn.cursor(row_factory=dict_row) as cursor:
             cursor.execute('''
                             SELECT 
-                                *
+                                u.user_name
                             FROM 
-                                "group" user_group
+                                "group" g
                             JOIN 
-                                membership on user_group.group_id = membership.group_id
+                                membership on g.group_id = membership.group_id
                             JOIN 
-                                "user" usr on usr.user_id = membership.user_id
+                                "user" u on u.user_id = membership.user_id
                             WHERE 
-                                usr.user_id = %s and user_group.group_id = %s;
-                            ''', [user_id, group_id])
+                                u.user_id = g.user_id and g.group_id = %s;
+                            ''', [group_id])
             return cursor.fetchone()
 
 def get_group_by_id(group_id: str) -> dict:
@@ -283,9 +283,36 @@ def get_members_from_group_id(group_id: str):
                             WHERE 
                                 group_id = %s;
                             ''', [group_id])
+            return cursor.fetchall() 
+        
+def all_groups():
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=dict_row) as cursor:
+            cursor.execute('''
+                            SELECT
+                                *
+                            FROM
+                                "group"
+                            ''')
             return cursor.fetchall()
 
+
+
 # TODO: Update group details
+def update_group(id: str, name: str, description: str, privacy: bool):
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=dict_row) as cursor:
+            cursor.execute('''
+                            UPDATE 
+                                "group"
+                            SET 
+                                group_name = %s, group_description = %s, group_public = %s
+                            WHERE
+                                group_id = %s;
+                            ''', [name, description, privacy, id])
+            cursor.fetchall
 
 
 # TODO: Delete a group

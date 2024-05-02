@@ -164,13 +164,22 @@ def group(group_id: int):
     session['prev_url'] = url_for('group', group_id=group_id)
     group = group_repo.get_user_group_from_group_id(group_id) # indiviudal group instance of selected element
     member_count = group_repo.get_member_count_from_group_id(group_id) # selcted group's member count
-    group_owner = group_repo.get_group_and_user_from_group_and_user_id(session['user_id'], group_id) # returns joint table between user-membership-group 
+    group_owner = group_repo.get_group_and_user_from_group_id(group_id) # returns joint table between user-membership-group 
+
+    members = group_repo.get_members_from_group_id(group_id)
     membership = group_repo.get_role_in_group_from_user_and_group_id(session['user_id'], group_id) # Get user's role in group
     group_events = event_repo.get_all_user_group_events_for_selected_group(session['user_id'], group_id) # Gets all events from group that user has been pending(invited) to.
     
     # Everything above this comment is information for the indvidual selected group
     sidebar_groups = group_repo.get_groups_from_user_id(session['user_id'])
-    return render_template('group.html', group=group, sidebar_groups=sidebar_groups, group_owner=group_owner, member_count = member_count, membership=membership, group_events=group_events)
+    return render_template('group.html', group=group, sidebar_groups=sidebar_groups, group_owner=group_owner, member_count = member_count, membership=membership, group_events=group_events, members=members)
+
+@app.get("/groups/<group_id>/group_edit/")
+def edit(group_id: str):
+    members = group_repo.get_members_from_group_id(group_id)
+    group = group_repo.get_user_group_from_group_id(group_id)
+    return render_template("group_edit.html", members=members, group=group)
+
 
 @app.post('/accept_event')
 def accept_event():
@@ -237,16 +246,26 @@ def get_edit_group_page(group_id: int):
     if group_repo.get_role_in_group_from_user_and_group_id(session['user_id'], group_id)['user_role'] != (0 and 1):
         return redirect(url_for('get_edit_group_page', group_id=group_id))
 
-    group_name = group_repo.get_group_name_by_id(group_id)
-    status = group_repo.get_group_public_status(group_id)
-    description = group_repo.get_group_description_by_id(group_id)
-    members = group_repo.get_members_and_roles(group_id)
+    members = group_repo.get_members_from_group_id(group_id)
+    group = group_repo.get_user_group_from_group_id(group_id)
     
-    new_group_name = group_repo.update_group_name(group_id, request.form.get('group_name'))
-    new_status = group_repo.update_group_status(group_id, True if request.form.get('privacy') == "on" else False)
-    new_description = group_repo.update_group_description(group_id, request.form.get('description'))
     
-    return render_template("group_edit.html", description=description, group_name=group_name, status=status, members=members, group_id=group_id)
+    return render_template("group_edit.html", members=members, group=group)
+
+@app.post("/groups/<group_id>/group_edit/")
+def save_group_edit_changes(group_id: str):
+    group_name = request.form.get('group-name')
+    group_description = request.form.get('description')
+    group_publicity = request.form.get('privacy') # grabs checkbox
+    print(group_publicity)
+    if(group_publicity is None): # if checkbox is blank, privacy is public --> true
+        group_publicity = True
+    elif(group_publicity == "on"):
+        group_publicity = False
+    
+    # TODO: CALL GROUP REPO METHODS TO UPDATE DATA INTO DATABASE
+    group_repo.update_group(group_id, group_name, group_description, group_publicity) # updates group
+    return redirect(url_for('edit', group_id=group_id))
 
 @app.get('/groups/<int:group_id>/create_event/')
 def get_create_event_page(group_id:int):
@@ -359,7 +378,13 @@ def edit_user_profile(user_id: int):
 def get_create_group_page():
     return render_template('create_group.html')
 
+@app.get('/find_group')
+def load_find_group_page():
+    groups = group_repo.all_groups()
+    return render_template('find_group.html', groups=groups)
+
 @app.post('/groups/create/')
+@login_is_required
 def create_group_page():
     group_name = request.form.get('group_name')
     group_description = request.form.get('group_description')

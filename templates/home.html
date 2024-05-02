@@ -37,13 +37,13 @@
                     {% endif %}
                 </div>
             <div class="card-buttons">
-                <button class="accept-button" data-event-id="{{ event['event_id'] }}" data-user-id="{{ session['user_id'] }}">Accept</button>
-                <button class="decline-button" data-event-id="{{ event['event_id'] }}" data-user-id="{{ session['user_id'] }}">Decline</button>
-                <button class="revert-button hidden" data-event-id="{{ event['event_id'] }}" data-user-id="{{ session['user_id'] }}">Revert</button>
+                <button class="accept-button btn btn-secondary" data-event-id="{{ event['event_id'] }}" data-user-id="{{ session['user_id'] }}">Accept</button>
+                <button class="decline-button btn btn-secondary" data-event-id="{{ event['event_id'] }}" data-user-id="{{ session['user_id'] }}">Decline</button>
+                <button class="revert-button hidden btn btn-secondary" data-event-id="{{ event['event_id'] }}" data-user-id="{{ session['user_id'] }}">Revert</button>
                 {% if (verify_admin_user(session['user_id'], event['group_id'], event['event_id'])['user_role'] == 0) or 
                 (verify_admin_user(session['user_id'], event['group_id'], event['event_id'])['user_role'] == 1) %}
-                <button><a href="/groups/{{event['group_id']}}/event_edit/{{event['event_id']}}/">Edit</a></button>
-                {% endif %}
+                <button class="btn btn-secondary"><a href="/groups/{{event['group_id']}}/event_edit/{{event['event_id']}}/">Edit</a></button>
+                {% endif %} 
             </div>
         </div>
         {% elif event['attending'] is true %}
@@ -59,12 +59,12 @@
                     {% endif %}
                 </div>
             <div class="card-buttons">
-                <button class="accept-button hidden" data-event-id="{{ event['event_id'] }}" data-user-id="{{ session['user_id'] }}">Accept</button>
-                <button class="decline-button hidden" data-event-id="{{ event['event_id'] }}" data-user-id="{{ session['user_id'] }}">Decline</button>
-                <button class="revert-button" data-event-id="{{ event['event_id'] }}" data-user-id="{{ session['user_id'] }}">Revert</button>
+                <button class="accept-button hidden btn btn-secondary" data-event-id="{{ event['event_id'] }}" data-user-id="{{ session['user_id'] }}">Accept</button>
+                <button class="decline-button hidden btn btn-secondary" data-event-id="{{ event['event_id'] }}" data-user-id="{{ session['user_id'] }}">Decline</button>
+                <button class="revert-button btn btn-secondary" data-event-id="{{ event['event_id'] }}" data-user-id="{{ session['user_id'] }}">Revert</button>
                 {% if (verify_admin_user(session['user_id'], event['group_id'], event['event_id'])['user_role'] == 0) or 
                 (verify_admin_user(session['user_id'], event['group_id'], event['event_id'])['user_role'] == 1) %}
-                <button><a href="/groups/{{event['group_id']}}/event_edit/{{event['event_id']}}/">Edit</a></button>
+                <button class="btn btn-secondary"><a href="/groups/{{event['group_id']}}/event_edit/{{event['event_id']}}/">Edit</a></button>
                 {% endif %}
             </div>
         </div>
@@ -81,12 +81,12 @@
                     {% endif %}
                 </div>
             <div class="card-buttons">
-                <button class="accept-button hidden" data-event-id="{{ event['event_id'] }}" data-user-id="{{ session['user_id'] }}">Accept</button>
-                <button class="decline-button hidden" data-event-id="{{ event['event_id'] }}" data-user-id="{{ session['user_id'] }}">Decline</button>
-                <button class="revert-button" data-event-id="{{ event['event_id'] }}" data-user-id="{{ session['user_id'] }}">Revert</button>
+                <button class="accept-button hidden btn btn-secondary" data-event-id="{{ event['event_id'] }}" data-user-id="{{ session['user_id'] }}">Accept</button>
+                <button class="decline-button hidden btn btn-secondary" data-event-id="{{ event['event_id'] }}" data-user-id="{{ session['user_id'] }}">Decline</button>
+                <button class="revert-button btn btn-secondary" data-event-id="{{ event['event_id'] }}" data-user-id="{{ session['user_id'] }}">Revert</button>
                 {% if (verify_admin_user(session['user_id'], event['group_id'], event['event_id'])['user_role'] == 0) or 
                 (verify_admin_user(session['user_id'], event['group_id'], event['event_id'])['user_role'] == 1) %}
-                <button><a href="/groups/{{event['group_id']}}/event_edit/{{event['event_id']}}/">Edit</a></button>
+                <button class="btn btn-secondary"><a href="/groups/{{event['group_id']}}/event_edit/{{event['event_id']}}/">Edit</a></button>
                 {% endif %}
             </div>
         </div>
@@ -101,6 +101,8 @@
             </div>
         </div>
     </div>
+    
+    
     
 </section>
 {% endblock %}

@@ -6,7 +6,7 @@
 {% block main %}
 <section class="grid-container">
     <div class="main-header"><h1>My Groups:</h1></div>
-    <div class="main-header"><h1>{{ group.group_name }}</h1></div>
+    <div class="main-header"></div>
     <div class="sidebar">
         <form action='/group' method="get">
             <ul>
@@ -19,24 +19,39 @@
 
     <div id="group-feed feed" class="feed bg-white">
         <div class="group-prf-card">
-            <div class="card-image"><img src="/static/img/Mukaka.jpg"></div>
+            <div class="card-image"><img class="" src="/static/img/Mukaka.jpg"></div>
             <div class="group-info">
-                <h1>Owner: {{ group_owner.user_name }}</h1>
-                <p>Members: {{ member_count }}</p>
-                {% if membership.user_role|int == 0 %}
-                    <p>Role: Owner</p>
-                {% elif membership.user_role|int == 1 %}
-                    <p>Role: Admin</p>
-                {% elif membership.user_role|int == 2 %}
-                    <p>Role: Member</p>
-                {% endif %}
-
+                <h1>{{ group.group_name }}</h1>
+                <p> {{ group.group_description }}</p>
+                <div class="container" id="group-meta">
+                    <p class="text-muted group-identifier">#{{ group.group_id }}</p>
+                    <p>Owner: {{ group_owner.user_name }}</p>
+                    <p>Members: {{ member_count }}</p>
+                    {% if group.group_public == true %}
+                        <p>Privacy: Public</p>
+                    {% elif group.group_public == false %}
+                        <p>Privacy: Private</p>
+                    {% endif %}
+                    {% if membership is none %}
+                    {% elif membership.user_role|int == 0 %}
+                        <p>Role: Owner</p>
+                    {% elif membership.user_role|int == 1 %}
+                        <p>Role: Admin</p>
+                    {% elif membership.user_role|int == 2 %}
+                        <p>Role: Member</p>
+                    {% endif %}
+                </div>
             </div>
             <div class="group-options">
-                <button><a href="/groups/{{ group['group_id'] }}/create_event/">Add Event</a></button>
-                <button><a href="/groups/{{ group['group_id'] }}/group_edit/">Edit</a></button>
-                <button>Message</button>
-                <button class="leave">Leave</button>
+                {% if membership is none %}
+                <button class="btn btn-primary">Join</button>
+                {% elif membership.user_role < 2 or membership.user_role > 0 %}
+                <button class="btn btn-secondary"><a href="/groups/{{ group['group_id'] }}/create_event/">Add Event</a></button>
+                <button class="btn btn-secondary"><a href="/groups/{{ group['group_id'] }}/group_edit/">Edit</a></button>
+                <button class="btn btn-secondary">Message</button>
+                <button class="btn btn-danger">Leave</button>
+                {% endif %}
+                
             </div>
         </div>
         <nav class="feed-nav">
@@ -47,6 +62,8 @@
                 <li id="activate-calendar" class="mb-3 text-lg md:text-xl">Calendar</li>
             </ul>
         </nav>
+
+        
         {% for event in group_events %}
         {% if event['attending'] is none %}
         <div class="card border-bold rounded" id="event-id-{{ event['event_id'] }}">
@@ -61,11 +78,11 @@
                     {% endif %}
                 </div>
             <div class="card-buttons">
-                <button class="accept-button" data-event-id="{{ event['event_id'] }}" data-user-id="{{ session['user_id'] }}">Accept</button>
-                <button class="decline-button" data-event-id="{{ event['event_id'] }}" data-user-id="{{ session['user_id'] }}">Decline</button>
-                <button class="revert-button hidden" data-event-id="{{ event['event_id'] }}" data-user-id="{{ session['user_id'] }}">Revert</button>
+                <button class="accept-button btn btn-secondary" data-event-id="{{ event['event_id'] }}" data-user-id="{{ session['user_id'] }}">Accept</button>
+                <button class="decline-button btn btn-secondary" data-event-id="{{ event['event_id'] }}" data-user-id="{{ session['user_id'] }}">Decline</button>
+                <button class="revert-button hidden btn btn-secondary" data-event-id="{{ event['event_id'] }}" data-user-id="{{ session['user_id'] }}">Revert</button>
                 {% if (membership.user_role|int == 0) or (membership.user_role|int == 1) %}
-                <button><a href="/groups/{{group['group_id']}}/event_edit/{{event['event_id']}}/">Edit</a></button>
+                <button class="btn btn-secondary"><a href="/groups/{{group['group_id']}}/event_edit/{{event['event_id']}}/">Edit</a></button>
                 {% endif %}
             </div>
         </div>
@@ -82,9 +99,9 @@
                     {% endif %}
                 </div>
             <div class="card-buttons">
-                <button class="accept-button hidden" data-event-id="{{ event['event_id'] }}" data-user-id="{{ session['user_id'] }}">Accept</button>
-                <button class="decline-button hidden" data-event-id="{{ event['event_id'] }}" data-user-id="{{ session['user_id'] }}">Decline</button>
-                <button class="revert-button" data-event-id="{{ event['event_id'] }}" data-user-id="{{ session['user_id'] }}">Revert</button>
+                <button class="accept-button hidden btn btn-secondary" data-event-id="{{ event['event_id'] }}" data-user-id="{{ session['user_id'] }}">Accept</button>
+                <button class="decline-button hidden btn btn-secondary" data-event-id="{{ event['event_id'] }}" data-user-id="{{ session['user_id'] }}">Decline</button>
+                <button class="revert-button btn btn-secondary" data-event-id="{{ event['event_id'] }}" data-user-id="{{ session['user_id'] }}">Revert</button>
                 {% if (membership.user_role|int == 0) or (membership.user_role|int == 1) %}
                 <button><a href="/groups/{{event['group_id']}}/event_edit/{{event['event_id']}}/">Edit</a></button>
                 {% endif %}
@@ -103,9 +120,9 @@
                     {% endif %}
                 </div>
             <div class="card-buttons">
-                <button class="accept-button hidden" data-event-id="{{ event['event_id'] }}" data-user-id="{{ session['user_id'] }}">Accept</button>
-                <button class="decline-button hidden" data-event-id="{{ event['event_id'] }}" data-user-id="{{ session['user_id'] }}">Decline</button>
-                <button class="revert-button" data-event-id="{{ event['event_id'] }}" data-user-id="{{ session['user_id'] }}">Revert</button>
+                <button class="accept-button hidden btn btn-secondary" data-event-id="{{ event['event_id'] }}" data-user-id="{{ session['user_id'] }}">Accept</button>
+                <button class="decline-button hidden btn btn-secondary" data-event-id="{{ event['event_id'] }}" data-user-id="{{ session['user_id'] }}">Decline</button>
+                <button class="revert-button btn btn-secondary" data-event-id="{{ event['event_id'] }}" data-user-id="{{ session['user_id'] }}">Revert</button>
                 {% if (membership.user_role|int == 0) or (membership.user_role|int == 1) %}
                 <button><a href="/groups/{{event['group_id']}}/event_edit/{{event['event_id']}}/">Edit</a></button>
                 {% endif %}
