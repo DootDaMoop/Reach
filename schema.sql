@@ -8,16 +8,18 @@ CREATE TABLE IF NOT EXISTS "user" (
     user_password   VARCHAR(255),
     user_first_name VARCHAR(255),
     user_last_name  VARCHAR(255),
+    user_description    VARCHAR(1000),
     google_id       VARCHAR(255) UNIQUE,
+    profile_picture   BYTEA,
     PRIMARY KEY (user_id)
 );
-
 CREATE TABLE IF NOT EXISTS "group" (
     group_id            SERIAL,
     user_id             SERIAL,
     group_name          VARCHAR(255) NOT NULL,
     group_description   VARCHAR(1000),
-    group_public        BOOLEAN NOT NULL,
+    group_public        BOOLEAN,
+    group_picture       BYTEA,
     FOREIGN KEY (user_id) REFERENCES "user"(user_id),
     PRIMARY KEY (group_id)
 );
@@ -31,8 +33,9 @@ CREATE TABLE IF NOT EXISTS event (
     event_public            BOOLEAN,
     event_start_timestamp   TIMESTAMP,
     event_end_timestamp     TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES "user"(user_id),
-    FOREIGN KEY (group_id) REFERENCES "group"(group_id),
+    event_picture           BYTEA,
+    FOREIGN KEY (user_id) REFERENCES "user"(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (group_id) REFERENCES "group"(group_id) ON DELETE CASCADE,
     PRIMARY KEY (event_id)
 );
 
@@ -40,22 +43,23 @@ CREATE TABLE IF NOT EXISTS pending (
     user_id     SERIAL,
     event_id    SERIAL,
     attending   BOOLEAN,
-    FOREIGN KEY (user_id) REFERENCES "user"(user_id),
-    FOREIGN KEY (event_id) REFERENCES event(event_id)
+    FOREIGN KEY (user_id) REFERENCES "user"(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (event_id) REFERENCES event(event_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS membership (
     user_id     SERIAL,
     group_id    SERIAL,
     user_role   INT,
-    FOREIGN KEY (user_id) REFERENCES "user"(user_id),
-    FOREIGN KEY (group_id) REFERENCES "group"(group_id)
+    joined      BOOLEAN,
+    FOREIGN KEY (user_id) REFERENCES "user"(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (group_id) REFERENCES "group"(group_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS collaboration (
     group_id    SERIAL,
     event_id    SERIAL,
-    FOREIGN KEY (group_id) REFERENCES "group"(group_id),
+    FOREIGN KEY (group_id) REFERENCES "group"(group_id) ON DELETE CASCADE,
     FOREIGN KEY (event_id) REFERENCES event(event_id)
 );
 -- END OF TABLE CREATION
@@ -93,5 +97,3 @@ INSERT INTO "group" (user_id, group_name, group_description, group_public) VALUE
 
 INSERT INTO event (user_id, group_id, event_name, event_description, event_public, event_start_timestamp, event_end_timestamp)
 VALUES (1, 1, 'Birthday Bash', 'WOOO BIRTHDAY!!!', TRUE , '2024-06-23 00:00:00', '2024-06-24 00:00:00');
-
--- END OF INSERTIONS

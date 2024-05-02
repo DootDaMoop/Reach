@@ -1,42 +1,119 @@
 {% extends '_layout.html' %}
 
 {% block title %}Create Event{% endblock %}
-{%  block head_script %}{% endblock %}
+{%  block head_script %}<script src="/static/event_member_list.js" defer></script>{% endblock %}
 
 {% block main %}
 
-<form action="{{ url_for('update_edited_event', group_id=group['group_id'], event_id=event['event_id']) }}" method="post">
+<form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" action="{{ url_for('update_edited_event', group_id=group['group_id'], event_id=event['event_id']) }}" method="post">
     <div>
-        <label for="event_name">Event Name:</label>
-        <input type="text" id="event_name " name="event_name" value="{{event['event_name']}}" required>
+        <label class="block text-gray-500 font-bold mb-1 md:mb-0 pr-4" for="event_name">Event Name:</label>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-3" type="text" id="event_name " name="event_name" value="{{event['event_name']}}" required>
     </div>
     <div>
-        <label for="event_description">Event Description:</label>
-        <input type="text" id="event_description" name="event_description" value="{{event['event_description']}}" required>
+        <label class="block text-gray-500 font-bold mb-1 md:mb-0 pr-4" for="event_description">Event Description:</label>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-3" type="text" id="event_description" name="event_description" value="{{event['event_description']}}" required>
     </div>
     <div>
-        <label for="is_event_public">Is Event Public:</label>
+        <label class="block text-gray-500 font-bold mb-1 md:mb-0 pr-4" for="is_event_public">Is Event Public:</label>
         {% if event['event_public'] %}
-        <input type="checkbox" id="is_event_public" name="is_event_public" checked>
+        <input class="mr-2 leading-tight" type="checkbox" id="is_event_public" name="is_event_public" checked>
         {% else %}
-        <input type="checkbox" id="is_event_public" name="is_event_public">
+        <input class="mr-2 leading-tight" type="checkbox" id="is_event_public" name="is_event_public">
         {% endif %}
     </div>
     <div>
-        <label for="event_start_date">Event Start Date:</label>
-        <input type="datetime-local" id="event_start_date" name="event_start_date" value="{{event['event_start_timestamp']}}" required>
+        <label class="block text-gray-500 font-bold mb-1 md:mb-0 pr-4" for="event_start_date">Event Start Date:</label>
+        <input class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-3" type="datetime-local" id="event_start_date" name="event_start_date" value="{{event['event_start_timestamp']}}" required>
     </div>
     <div>
-        <label for="event_end_date">Event End Date:</label>
-        <input type="datetime-local" id="event_end_date" name="event_end_date" value="{{event['event_end_timestamp']}}" required>
+        <label class="block text-gray-500 font-bold mb-1 md:mb-0 pr-4" for="event_end_date">Event End Date:</label>
+        <input class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-3" type="datetime-local" id="event_end_date" name="event_end_date" value="{{event['event_end_timestamp']}}" required>
     </div>
     <div>
-        <button type="submit">Edit Event</button>
+        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-2" type="submit">Edit Event</button>
     </div>
 </form>
 
 <form action="{{url_for('delete_event', event_id=event['event_id'],group_id=group['group_id']) }}" method="post">
-    <button>Delete Event</button>
+    <button class="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900 ml-4 mb-4">Delete Event</button>
 </form>
+
+<nav class="feed-nav">
+    <ul>
+        <li id="activate-invited-members" class="active mb-3 text-lg md:text-xl">Invited Members</li>
+        <li id="activate-members" class="mb-3 text-lg md:text-xl">Members</li>
+    </ul>
+</nav>
+<input class="form-control" type="text" name="search-bar-invited" id="search-bar-invited" placeholder="Search Invited Members">
+<input class="form-control hidden" type="text" name="search-bar-uninvited" id="search-bar-uninvited" placeholder="Search Uninivited Members">
+<div class="member-list mb-5">
+    {% for member in members %}
+
+    {% if verify_member_is_invited_to_event(member['user_id'],event['event_id']) is true %}
+    <div class="invited-member" id="user-id-{{member['user_id']}}">
+        {% if member['profile_picture'] is none %}
+        <div class="profile-circle">
+            <img class="circle-img-default" src="/static/img/default-avatar.png" alt="profile icon">
+        </div>
+        {% else %}
+        <div class="profile-circle">
+            <img class="circle-img" src="/profile_picture/{{member['user_id']}}" alt="profile icon">
+        </div>
+        {% endif %}
+
+        <p class="w-25 member-name">{{ member['user_name'] }}</p>
+
+        {% if member.user_role|int == 0 %}
+            <p>Role: Owner</p>
+        {% elif member.user_role|int == 1 %}
+            <p>Role: Admin</p>
+        {% elif member.user_role|int == 2 %}
+            <p>Role: Member</p>
+        {% endif %}
+
+        {% set attending_status = get_attending_status(member['user_id'],event['event_id'])['attending'] %}
+        {% if attending_status is none %}
+        <p id="attending-status-{{member['user_id']}}">Attending: Pending</p>
+        {% elif attending_status is true %}
+        <p id="attending-status-{{member['user_id']}}">Attending: True</p>
+        {% else %}
+        <p id="attending-status-{{member['user_id']}}">Attending: False</p>
+        {% endif %}
+
+        <button class="invite-button btn btn-primary hidden" data-event-id="{{ event['event_id'] }}" data-user-id="{{ member['user_id'] }}">Invite User</button>
+        <button class="remove-invite-button btn btn-danger" data-event-id="{{ event['event_id'] }}" data-user-id="{{ member['user_id'] }}">Remove Invite</button>
+    </div>
+    {% else %}
+    <div class="member hidden" id="user-id-{{member['user_id']}}">
+        {% if member['profile_picture'] is none %}
+        <div class="profile-circle">
+            <img class="circle-img-default" src="/static/img/default-avatar.png" alt="profile icon">
+        </div>
+        {% else %}
+        <div class="profile-circle">
+            <img class="circle-img" src="/static/img/default-avatar.png" alt="profile icon">
+        </div>
+        {% endif %}
+
+        <p class="w-25">{{ member['user_name'] }}</p>
+
+        {% if member.user_role|int == 0 %}
+            <p>Role: Owner</p>
+        {% elif member.user_role|int == 1 %}
+            <p>Role: Admin</p>
+        {% elif member.user_role|int == 2 %}
+            <p>Role: Member</p>
+        {% endif %}
+
+        <p class="hidden" id="attending-status-{{member['user_id']}}"></p>
+
+        <button class="invite-button btn btn-primary" data-event-id="{{ event['event_id'] }}" data-user-id="{{ member['user_id'] }}">Invite User</button>
+        <button class="remove-invite-button btn btn-danger hidden" data-event-id="{{ event['event_id'] }}" data-user-id="{{ member['user_id'] }}">Remove Invite</button>
+    </div>
+    {% endif %}
+
+    {% endfor %}
+</div>
 
 {% endblock %}

@@ -5,7 +5,7 @@
 
 {% block main %}
 <section class="grid-container">
-    <div class="main-header"><h1>My Groups:</h1></div>
+    <div class="main-header mt-3"><h1>My Groups:</h1></div>
     <div class="main-header"></div>
     <div class="sidebar">
         <form action='/group' method="get">
@@ -19,7 +19,7 @@
 
     <div id="group-feed feed" class="feed bg-white">
         <div class="group-prf-card">
-            <div class="card-image"><img class="" src="/static/img/Mukaka.jpg"></div>
+            <div class="card-image"><img class="" src="/group_picture/{{group['group_id']}}"></div>
             <div class="group-info">
                 <h1>{{ group.group_name }}</h1>
                 <p> {{ group.group_description }}</p>
@@ -68,17 +68,41 @@
         </div>
         <nav class="feed-nav">
             <ul>
-                <li id="activate-about"class="active mb-3 text-lg md:text-xl">Members</li>
-                <li id="activate-event"class="active mb-3 text-lg md:text-xl">Events</li>
+                <li id="activate-members"class="active mb-3 text-lg md:text-xl">Members</li>
+                <li id="activate-event"class="mb-3 text-lg md:text-xl">Events</li>
                 <li id="activate-choice-events" class="mb-3 text-lg md:text-xl">Accepted/Declined Events</li>
                 <li id="activate-calendar" class="mb-3 text-lg md:text-xl">Calendar</li>
             </ul>
         </nav>
 
-        
+        <div class="member-list">
+            {% for member in members %}
+            <div class="member">
+                {% if member['profile_picture'] is none %}
+                <div class="profile-circle">
+                    <img class="circle-img-default" src="/static/img/default-avatar.png" alt="profile icon">
+                </div>
+                {% else %}
+                <div class="profile-circle">
+                    <img class="circle-img" src="/profile_picture/{{member['user_id']}}" alt="profile icon">
+                </div>
+                {% endif %}
+                <p class="w-25">{{ member['user_name'] }}</p>
+
+                {% if member.user_role|int == 0 %}
+                    <p>Role: Owner</p>
+                {% elif member.user_role|int == 1 %}
+                    <p>Role: Admin</p>
+                {% elif member.user_role|int == 2 %}
+                    <p>Role: Member</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+
         {% for event in group_events %}
         {% if event['attending'] is none %}
-        <div class="card border-bold rounded" id="event-id-{{ event['event_id'] }}">
+        <div class="card border-bold rounded hidden" id="event-id-{{ event['event_id'] }}">
             <div class="card-image"><img src="/static/img/Image1.png" alt="Image"></div>
                 <div class="card-content">
                     <h2>{{event['event_name']}}</h2>
