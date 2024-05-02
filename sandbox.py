@@ -11,15 +11,15 @@ def send_email():
     port = 587  
     sender_email = "reach543210@gmail.com"
     receiver_email = "ynieban@uncc.edu"
-    password = "sfjw uond wezc fnsl"
+    password = "sfjw uond wezc fnsl" #APP PASSWORD; Goes in .env
 
     server = smtplib.SMTP(smtp_server, port)
     server.starttls()
     server.login(sender_email, password)
 
     message = MIMEMultipart('alternative')
-    message["Subject"] = "cum 4.0"
-    message["From"] = sender_email
+    message["Subject"] = "cum 4.0"      #subject of email
+    message["From"] = sender_email      
     message["To"] = receiver_email
 
     html = """\
@@ -39,7 +39,6 @@ def send_email():
 
     server.sendmail(sender_email, receiver_email, message.as_string())
     server.quit()
-    print("cum time")
 
 def schedule_email(event_time_str, hours_before = 0, minutes_before=0, seconds_before=0):
 
@@ -56,7 +55,8 @@ def schedule_email(event_time_str, hours_before = 0, minutes_before=0, seconds_b
     else:
         print("Send time is in the past. Email will not be sent.")
 
-# event_time_str = "2024-5-02 03:03:50" 
+# Hard Coded Example
+# event_time_str = "2024-5-02 05:40:50" 
 # hours_before = 0    
 # minutes_before = 0 
 # seconds_before = 0
@@ -67,6 +67,3 @@ def schedule_email(event_time_str, hours_before = 0, minutes_before=0, seconds_b
 # for i in range(10):
 #     print(i)
 #     time.sleep(1)
-
-
-    
