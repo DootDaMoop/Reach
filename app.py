@@ -214,8 +214,9 @@ def edit_user_profile(user_id: int):
     print(profile_picture)
     return redirect(f"/profile/{user_id}")
 
-
-
+@app.get('/event_picture/<int:event_id>')
+def event_picture(event_id):
+    return event_repo.get_event_picture(event_id)
 
 @app.get('/profile_picture/<int:user_id>')
 def profile_picture(user_id):
@@ -224,7 +225,6 @@ def profile_picture(user_id):
 @app.get('/group_picture/<int:user_id>')
 def group_picture(group_id):
     return group_repo.get_group_picture(group_id)
-
 
 @app.get('/groups/create/')
 @login_is_required

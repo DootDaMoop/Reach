@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS event (
     event_public            BOOLEAN,
     event_start_timestamp   TIMESTAMP,
     event_end_timestamp     TIMESTAMP,
+    event_picture   BYTEA,
     FOREIGN KEY (user_id) REFERENCES "user"(user_id),
     FOREIGN KEY (group_id) REFERENCES "group"(group_id),
     PRIMARY KEY (event_id)

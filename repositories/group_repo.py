@@ -361,8 +361,7 @@ def update_group_picture(group_id: int, group_picture: FileStorage) -> bool:
                 return False
 
 
-def get_group_picture(user_id: int):
-    """Retrieve and send the profile picture for a given user."""
+def get_group_picture(group_id: int):
     pool = get_pool()
     with pool.connection() as conn:
         with conn.cursor(row_factory=dict_row) as cur:  # Ensure dict_row is used
