@@ -297,6 +297,20 @@ def all_groups():
                             ''')
             return cursor.fetchall()
 
+def check_membership(user_id, group_id):
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=dict_row) as cursor:
+            cursor.execute('''
+                            SELECT
+                                *
+                            FROM
+                                membership
+                            WHERE
+                                user_id = %s and group_id = %s
+                            ''', [user_id, group_id])
+            return cursor.fetchone()
+
 
 
 # TODO: Update group details
@@ -312,14 +326,29 @@ def update_group(id: str, name: str, description: str, privacy: bool):
                             WHERE
                                 group_id = %s;
                             ''', [name, description, privacy, id])
-            cursor.fetchall
+            cursor.fetchall()
 
 
 # TODO: Delete a group
 
 
 # TODO: Add Member
-
+def join_group(user_id: str, group_id: str):
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=dict_row) as cursor:
+            cursor.execute('''
+                            INSERT INTO
+                                membership (user_id, group_id, user_role)
+                            VALUES
+                                (%s, %s, 2)
+                            RETURNING user_id
+                            ''', [user_id, group_id])
+            verify_id = cursor.fetchone()
+            if(user_id == verify_id):
+                return "Join successful", 200
+            else:
+                return "Join unsuccesful", 400
 
 
 # TODO: Remove Member
