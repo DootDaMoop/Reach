@@ -5,7 +5,7 @@
 
 {% block main %}
 <section class="grid-container">
-    <div class="main-header"><h1>My Groups:</h1></div>
+    <div class="main-header mt-3"><h1>My Groups:</h1></div>
     <div class="main-header"></div>
     <div class="sidebar">
         <form action='/group' method="get">
@@ -44,7 +44,7 @@
             </div>
             <div class="group-options">
                 {% if membership is none %}
-                <button class="btn btn-primary">Join</button>
+                <button class="btn btn-primary mr-2 mb-2">Join</button>
                 {% elif membership.user_role == 0 or membership.user_role == 1 %}
                 <button class="btn btn-secondary"><a href="/groups/{{ group['group_id'] }}/create_event/">Add Event</a></button>
                 <button class="btn btn-secondary"><a href="/groups/{{ group['group_id'] }}/group_edit/">Edit</a></button>

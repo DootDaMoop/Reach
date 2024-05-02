@@ -3,21 +3,21 @@
 {% block title %}Create Group{% endblock %}
 
 {% block main %}
-<form action="/groups/create/" method="post">
+<form action="/groups/create/" method="post" class="ml-4 w-full max-w-sm">
     <div>
-        <label for="group_name">Group Name:</label>
-        <input type="text" id="group_name" name="group_name" required>
+        <label class="block text-gray-500 font-bold mb-1 md:mb-0 pr-4 mt-4" for="group_name">Group Name:</label>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-3" type="text" id="group_name" name="group_name" required>
     </div>
     <div>
-        <label for="group_description">Group Description:</label>
-        <input type="text" id="group_description" name="group_description" required>
+        <label class="block text-gray-500 font-bold mb-1 md:mb-0 pr-4" for="group_description">Group Description:</label>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-3" type="text" id="group_description" name="group_description" required>
     </div>
     <div>
-        <label for="is_group_public">Is Group Public:</label>
-        <input type="checkbox" id="is_group_public" name="is_group_public">
+        <label class="block text-gray-500 font-bold mb-1 md:mb-0 pr-4" for="is_group_public">Is Group Public:</label>
+        <input class="mr-2 leading-tight" type="checkbox" id="is_group_public" name="is_group_public">
     </div>
     <div>
-        <button type="submit">Create Group</button>
+        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-2" type="submit">Create Group</button>
     </div>
 </form>
 
