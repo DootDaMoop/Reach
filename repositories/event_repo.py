@@ -1,6 +1,6 @@
 from repositories.db import get_pool
 from repositories.group_repo import get_members_from_group_id
-from repositories import group_repo
+from repositories import group_repo, email_repo, user_repo
 from psycopg.rows import dict_row
 from typing import Tuple, Union, Dict, Any
 from werkzeug.datastructures import FileStorage
@@ -181,10 +181,27 @@ def invite_all_users_in_group_to_event(group_id: int, event_id: int) -> dict[str
                         VALUES (%s, %s, NULL)
                         RETURNING event_id
                         ''', [user_id, event_id['event_id']])
-                event = cur.fetchall()
-
-                if event is None:
+                invites = cur.fetchall()
+                if invites is None:
                     raise Exception('Failed to send pending invites.')
+                
+                event = get_event_by_event_id(event_id['event_id'])
+
+                subject = f"Reach: You've been invited to {event['event_name']}!"
+                html = f"""
+                        <html>
+                            <body>
+                                <h1>Event Name: {event['event_name']}</h1>
+                                <h2>Public Event: {event['event_public']}</h2>
+                                <p><b>Description: {event['event_description']}</b></p>
+                                <p><b>Event Start Time: {event['event_start_timestamp'].strftime('%Y-%m-%d %I:%M:%S %p')}</b></p>
+                                <p><b>Event End Time: {event['event_end_timestamp'].strftime('%Y-%m-%d %I:%M:%S %p')}</b></p>
+                                <br>
+                                <p>Hope to see you there!</p>
+                            </body>
+                        </html>
+                        """
+                email_repo.send_email(member['user_email'],subject, html)
 
 def verify_user_admin_for_event(user_id: int, group_id: int, event_id: int) -> bool:
     pool = get_pool()
@@ -343,10 +360,29 @@ def invite_user_to_event(user_id: int, event_id: int):
                     VALUES (%s, %s, NULL)
                     RETURNING event_id
                     ''', [user_id, event_id])
-            event = cur.fetchone()
+            event_id = cur.fetchone()
 
-            if event is None:
+            if event_id is None:
                 raise Exception('Failed to send invite.')
+            
+            event = get_event_by_event_id(event_id['event_id'])
+
+            subject = f"Reach: You've been invited to {event['event_name']}!"
+            html = f"""
+                    <html>
+                        <body>
+                            <h1>Event Name: {event['event_name']}</h1>
+                            <h2>Public Event: {event['event_public']}</h2>
+                            <p><b>Description: {event['event_description']}</b></p>
+                            <p><b>Event Start Time: {event['event_start_timestamp'].strftime('%Y-%m-%d %I:%M:%S %p')}</b></p>
+                            <p><b>Event End Time: {event['event_end_timestamp'].strftime('%Y-%m-%d %I:%M:%S %p')}</b></p>
+                            <br>
+                            <p>Hope to see you there!</p>
+                        </body>
+                    </html>
+                    """
+            user = user_repo.get_user_from_user_id(user_id)
+            email_repo.send_email(user['user_email'],subject, html)
 
 def remove_invited_user_from_event(user_id: int, event_id: int):
     pool = get_pool()

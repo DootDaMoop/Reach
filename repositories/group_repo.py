@@ -277,7 +277,7 @@ def get_members_from_group_id(group_id: int):
         with conn.cursor(row_factory=dict_row) as cursor:
             cursor.execute('''
                             SELECT
-                                user_name, user_role, profile_picture, u.user_id
+                                user_name, user_role, profile_picture, u.user_id, u.user_email
                             FROM
                                 membership
                             JOIN

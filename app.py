@@ -8,7 +8,7 @@ from google_auth_oauthlib.flow import Flow
 from pip._vendor import cachecontrol
 import google.auth.transport.requests
 from dotenv import load_dotenv
-from repositories import user_repo, group_repo, event_repo
+from repositories import user_repo, group_repo, event_repo, email_repo
 from functools import wraps
 import smtplib
 from email.mime.text import MIMEText
@@ -247,7 +247,7 @@ def revert_event():
 
     return jsonify({'message': 'Event declined successfully'})
 
-@app.post('/get_events_for_day')
+@app.post('/get_num_events_for_day')
 def get_user_events_for_calendar_on_day():
     data = request.json
     year = data['year']
@@ -328,7 +328,6 @@ def get_event_edit_page(group_id: int, event_id: int):
     group = group_repo.get_user_group_from_group_id(group_id)
     event = event_repo.get_event_by_event_id(event_id)
     members = event_repo.get_members_for_edit_event_page(group_id)
-    #members = group_repo.get_members_from_group_id(group_id)
     return render_template('edit_event.html', group=group, event=event, members=members, verify_member_is_invited_to_event=event_repo.verify_member_is_invited_to_event, get_attending_status=event_repo.get_attending_status)
 
 @app.post('/groups/<int:group_id>/event_edit/<int:event_id>/')

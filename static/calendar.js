@@ -28,7 +28,7 @@ async function renderCalendar(year, month) {
             calendarHTML.push(`<td class="calendar-day next-month-calendar-day"onclick="nextMonth()">${nextMonthDay}</td>`);
         } else {
             dayCounter++;
-            const dayEvents = await getEventsOnDay(year, month+1, dayCounter);
+            const dayEvents = await getNumEventsOnDay(year, month+1, dayCounter);
             console.log(dayEvents)
                 if(dayEvents > 0) {
                     calendarHTML.push(`<td class="calendar-day has-event" id="${year}-${month+1}-${dayCounter}" onclick="selectDate(${dayCounter})">${dayCounter}</td>`);
@@ -66,13 +66,13 @@ async function prevMonth() {
     await renderCalendar(currentYear, currentMonth);
 }
 
-function selectDate(date) {
-    alert(`You selected: ${date}`);
+function selectDate(year, month, day) {
+    
 }
 
-async function getEventsOnDay(year, month, day) {
+async function getNumEventsOnDay(year, month, day) {
     try {
-        const response = await fetch('/get_events_for_day', {
+        const response = await fetch('/get_num_events_for_day', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

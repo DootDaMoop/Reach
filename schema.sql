@@ -56,12 +56,6 @@ CREATE TABLE IF NOT EXISTS membership (
     FOREIGN KEY (group_id) REFERENCES "group"(group_id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS collaboration (
-    group_id    SERIAL,
-    event_id    SERIAL,
-    FOREIGN KEY (group_id) REFERENCES "group"(group_id) ON DELETE CASCADE,
-    FOREIGN KEY (event_id) REFERENCES event(event_id)
-);
 -- END OF TABLE CREATION
 -- TRIGGERS AND FUNCTIONS
 
@@ -83,17 +77,5 @@ after insert
 for each row execute
     function update_on_membership();
 -- END OF TRIGGERS AND FUNCTIONS
+
 -- INSERTIONS
-INSERT INTO "user" (user_name, user_password, user_email) VALUES
-    ('Dom', 'dom123', 'dom@gmail.com'),
-    ('Jason', 'jason123', 'jason@gmail.com'),
-    ('Connor', 'connor123', 'connor@gmail.com'),
-    ('Aidan', 'aidan', 'aidan@gmail.com');
-
-INSERT INTO "group" (user_id, group_name, group_description, group_public) VALUES
-    (1, 'ITCS 2181', 'COMPUTER SYSTEMS AHHHHH', TRUE),
-    (2, 'ITCS 3155', 'SOFTWARE ENGINEERING AHHHHH', TRUE),
-    (1, 'Bahamon Fan Club', 'a', FALSE);
-
-INSERT INTO event (user_id, group_id, event_name, event_description, event_public, event_start_timestamp, event_end_timestamp)
-VALUES (1, 1, 'Birthday Bash', 'WOOO BIRTHDAY!!!', TRUE , '2024-06-23 00:00:00', '2024-06-24 00:00:00');
