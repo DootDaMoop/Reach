@@ -57,49 +57,66 @@ import time
 
 
 import smtplib
-from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+import datetime as dt
+import time
 
 def send_email():
-    try:
-        smtp_server = "smtp.gmail.com"
-        port = 587  
-        sender_email = "reach543210@gmail.com"
-        receiver_email = "alopez53@uncc.edu"
-        password = "sfjw uond wezc fnsl"
+    smtp_server = "smtp.gmail.com"
+    port = 587  # Port for STARTTLS connections
+    sender_email = "reach543210@gmail.com"
+    receiver_email = "alopez53@uncc.edu"
+    password = "sfjw uond wezc fnsl"
 
-        server = smtplib.SMTP(smtp_server, port)
-        server.starttls()  # Secure the connection
-        server.login(sender_email, password)  # Log in to the server
+    # Setting up the server connection
+    server = smtplib.SMTP(smtp_server, port)
+    server.starttls()
+    server.login(sender_email, password)
 
-        message = MIMEMultipart('alternative')
-        message["Subject"] = "cum 3.0"
-        message["From"] = sender_email
-        message["To"] = receiver_email
+    # Setting up the email message
+    message = MIMEMultipart('alternative')
+    message["Subject"] = "cum 3.0"
+    message["From"] = sender_email
+    message["To"] = receiver_email
 
-        html = """\
-        <html>
-        <head></head>
-        <body>
-            <p>cum<br>
-            cummuc<br>
-            cum time <a href="http://www.sdfsfdsfdf.com">link</a> you wanted.
-            </p>
-        </body>
-        </html>
-        """
+    # Email content
+    html = """\
+    <html>
+    <head></head>
+    <body>
+        <p>cum<br>
+        cummuc<br>
+        cum time <a href="http://www.sdfsfdsfdf.com">link</a> you wanted.
+        </p>
+    </body>
+    </html>
+    """
 
-        content = MIMEText(html, 'html')
-        message.attach(content)
+    content = MIMEText(html, 'html')
+    message.attach(content)
 
-        server.sendmail(sender_email, receiver_email, message.as_string())
-        server.quit()
-        print("Email sent!")
-    except Exception as e:
-        print("Failed to send email:", e)
+    # Sending the email
+    server.sendmail(sender_email, receiver_email, message.as_string())
+    server.quit()
+    print("Email sent!")
 
-# Example call to the function
+# User input for scheduling the email
+schedule_time = input("Enter the time to send the email (HH:MM, 24-hour format): ")
+schedule_hour, schedule_minute = map(int, schedule_time.split(':'))
+
+# Current time and desired send time
+now = dt.datetime.now()
+send_time = dt.datetime(now.year, now.month, now.day, schedule_hour, schedule_minute)
+
+# Wait until the send time
+if now < send_time:
+    time_to_wait = (send_time - now).total_seconds()
+    time.sleep(time_to_wait)
+
+# Send the email
 send_email()
+
 
 
 
