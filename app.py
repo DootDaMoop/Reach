@@ -10,6 +10,8 @@ import google.auth.transport.requests
 from dotenv import load_dotenv
 from repositories import user_repo, group_repo, event_repo
 from functools import wraps
+import smtplib
+from email.mime.text import MIMEText
 
 load_dotenv()
 
@@ -348,6 +350,21 @@ def delete_event(event_id: int, group_id: int):
     event_repo.delete_event(event_id)
     return redirect(session['prev_url'])
 
+@app.get('/groups/<int:group_id>/group_edit/delete/')
+def delete_individual_group(group_id: int):
+
+    #Make sure user is owner of group to delete 
+    if group_repo.get_role_in_group_from_user_and_group_id(session['user_id'], group_id)['user_role'] != (0):
+        return redirect(url_for('get_edit_group_page', group_id=group_id))
+    
+    group_repo.delete_group(group_id)
+    
+    return redirect('/home')
+
+#PROFILE ROUTES
+
+
+
 @app.post('/invite_to_event')
 def invite_to_event():
     data = request.json
@@ -378,6 +395,7 @@ def remove_invite_to_event():
 @app.get('/profile/<int:user_id>')
 def profile(user_id: int):
     user = user_repo.get_user_from_user_id(user_id)
+
     return render_template('profile.html', user=user)
 
 @app.get('/profile/<int:user_id>/edit/')
@@ -420,6 +438,44 @@ def profile_picture(user_id):
 @app.get('/group_picture/<int:group_id>')
 def group_picture(group_id):
     return group_repo.get_group_picture(group_id)
+
+@app.post('/profile/<int:user_id>/edit/delete')
+def delete_user_profile(user_id: int):
+    if user_id != session['user_id']:
+        return redirect(url_for(get_edit_user_profile_page, user_id=session['user_id']))
+    
+    #get list of groups that contain groups owned by user
+    owned_groups = group_repo.get_user_groups_from_user_id(user_id) 
+
+    #If user is not the owner of any groups
+    if owned_groups is None:
+        user_repo.delete_user(session['user_id'])
+    else: 
+        #for users that own groups, transfer status to an admin
+        for group in owned_groups:
+
+            #grab an admin to make the new owner of the group
+            new_owner = group_repo.get_admin_member_and_role(group['group_id'])
+
+            #makes sure list of admins is not empty
+            if type(new_owner) is int:
+                #get user_id of new owner
+                new_owner_id = new_owner['user_id']
+
+                #change user role to owner
+                group_repo.change_member_role(new_owner_id, group['group_id'], 0)
+
+            #if the admin list is empty just delete the group
+            else:
+                #Delete group
+                group_repo.delete_group(group['group_id'])
+        
+        user_repo.delete_user(session['user_id'])
+
+    return redirect('/logout')
+
+
+
 
 @app.get('/groups/create/')
 @login_is_required
