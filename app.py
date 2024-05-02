@@ -295,7 +295,11 @@ def create_event_for_selected_group(group_id: int):
     # If an event is public then all the users in a group will be invited.
     if event['event_public']:
         event_repo.invite_all_users_in_group_to_event(group_id, event['event_id'])
-    # TODO: Just invite user_id who made the event
+    else:
+        event_repo.invite_user_to_event(session['user_id'], event['event_id'])
+        group = group_repo.get_group_by_id(group_id)
+        if session['user_id'] != group['user_id']:
+            event_repo.invite_user_to_event(group['user_id'],event['event_id'])
 
     return redirect(f'/groups/{group_id}/')
 

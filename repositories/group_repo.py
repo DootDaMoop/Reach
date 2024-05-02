@@ -134,7 +134,7 @@ def get_group_and_user_from_group_id(group_id: str):
                             ''', [group_id])
             return cursor.fetchone()
 
-def get_group_by_id(group_id: str) -> dict:
+def get_group_by_id(group_id: int) -> dict:
     pool = get_pool()
     with pool.connection() as conn:
         with conn.cursor(row_factory=dict_row) as cursor:
