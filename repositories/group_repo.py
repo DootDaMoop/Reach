@@ -55,7 +55,7 @@ def create_group(user_id: str, group_name: str, group_description: str, group_pu
                 'group_id': group_id,
                 'group_name': group_name
             }
-            
+
 def get_user_group_from_group_id(group_id: str):
     pool = get_pool()
     with pool.connection() as conn:
@@ -69,7 +69,7 @@ def get_user_group_from_group_id(group_id: str):
                                 group_id = %s
                             ''', [group_id])
             return cursor.fetchone()
-        
+
 def get_member_count_from_group_id(group_id: str):
     pool = get_pool()
     with pool.connection() as conn:
@@ -83,21 +83,21 @@ def get_member_count_from_group_id(group_id: str):
                                 group_id = %s
                             ''', [group_id])
             return cursor.fetchone()[0]
-        
+
 def get_role_in_group_from_user_and_group_id(user_id: str, group_id: str):
     pool = get_pool()
     with pool.connection() as conn:
         with conn.cursor(row_factory=dict_row) as cursor:
             cursor.execute('''
                             SELECT
-                                *
+                                user_role
                             FROM
                                 membership
                             WHERE
                                 user_id = %s and group_id = %s
                             ''', [user_id, group_id])
             return cursor.fetchone()
-        
+
 def get_groups_from_user_id(user_id: str): # This returns all groups a user is a part of, in comparison to turning in groups a user is owner of
     pool = get_pool()
     with pool.connection() as conn:
@@ -115,25 +115,25 @@ def get_groups_from_user_id(user_id: str): # This returns all groups a user is a
                                 usr.user_id = %s;
                             ''', [user_id])
             return cursor.fetchall()
-        
-def get_group_and_user_from_group_and_user_id(user_id: str, group_id: str):
+
+def get_group_and_user_from_group_id(group_id: str):
     pool = get_pool()
     with pool.connection() as conn:
         with conn.cursor(row_factory=dict_row) as cursor:
             cursor.execute('''
                             SELECT 
-                                *
+                                u.user_name
                             FROM 
-                                "group" user_group
+                                "group" g
                             JOIN 
-                                membership on user_group.group_id = membership.group_id
+                                membership on g.group_id = membership.group_id
                             JOIN 
-                                "user" usr on usr.user_id = membership.user_id
+                                "user" u on u.user_id = membership.user_id
                             WHERE 
-                                usr.user_id = %s and user_group.group_id = %s;
-                            ''', [user_id, group_id])
-            return cursor.fetchone() 
-        
+                                u.user_id = g.user_id and g.group_id = %s;
+                            ''', [group_id])
+            return cursor.fetchone()
+
 def get_group_by_id(group_id: str) -> dict:
     pool = get_pool()
     with pool.connection() as conn:
@@ -187,7 +187,6 @@ def get_group_public_status(group_id: str) -> bool:
                 return result[0]  # Assuming 'group_public' is the first column returned
             else:
                 raise ValueError("Group not found with the specified ID")
-            
 
 
 
@@ -231,10 +230,6 @@ def get_members_and_roles(group_id: str):
                 return members
             else:
                 return "No members found for this group."
-
-
-
-
 
 def update_group_description(group_id: str, new_description: str):
     pool = get_pool()
@@ -287,19 +282,42 @@ def get_members_from_group_id(group_id: str):
         with conn.cursor(row_factory=dict_row) as cursor:
             cursor.execute('''
                             SELECT 
-                                *
+                                user_id
                             FROM 
-                                "user" u1
-                            JOIN 
-                                membership on u1.user_id = membership.user_id
-                            JOIN 
-                                "group" g1 on g1.group_id = membership.group_id
+                                membership
                             WHERE 
-                                g1.group_id = %s;
+                                group_id = %s;
                             ''', [group_id])
             return cursor.fetchall() 
+        
+def all_groups():
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=dict_row) as cursor:
+            cursor.execute('''
+                            SELECT
+                                *
+                            FROM
+                                "group"
+                            ''')
+            return cursor.fetchall()
+
+
 
 # TODO: Update group details
+def update_group(id: str, name: str, description: str, privacy: bool):
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=dict_row) as cursor:
+            cursor.execute('''
+                            UPDATE 
+                                "group"
+                            SET 
+                                group_name = %s, group_description = %s, group_public = %s
+                            WHERE
+                                group_id = %s;
+                            ''', [name, description, privacy, id])
+            cursor.fetchall
 
 
 # TODO: Delete a group

@@ -1,4 +1,4 @@
-function renderCalendar(year, month) {
+async function renderCalendar(year, month) {
     const calendarDiv = document.getElementById('calendar');
     const monthNames = ['January', 'Feburary', 'March', 'April', 'May', 'June', 'July',
                         'August', 'September', 'October', 'November', 'December'];
@@ -28,41 +28,75 @@ function renderCalendar(year, month) {
             calendarHTML.push(`<td class="calendar-day next-month-calendar-day"onclick="nextMonth()">${nextMonthDay}</td>`);
         } else {
             dayCounter++;
-            calendarHTML.push(`<td class="calendar-day" onclick="selectDate(${dayCounter})">${dayCounter}</td>`);
+            const dayEvents = await getEventsOnDay(year, month+1, dayCounter);
+            console.log(dayEvents)
+                if(dayEvents > 0) {
+                    calendarHTML.push(`<td class="calendar-day has-event" id="${year}-${month+1}-${dayCounter}" onclick="selectDate(${dayCounter})">${dayCounter}</td>`);
+                } else {
+                    calendarHTML.push(`<td class="calendar-day" id="${year}-${month+1}-${dayCounter}" onclick="selectDate(${dayCounter})">${dayCounter}</td>`);
+                }
+            
+            }
+            // Creates new row
+            if((i + 1) % 7 === 0) {
+                calendarHTML.push('</tr><tr>');
+            }
         }
-
-        // Creates new row
-        if((i + 1) % 7 === 0) {
-            calendarHTML.push('</tr><tr>');
-        }
-    }
     calendarHTML.push('</tr></table>');
-
     calendarDiv.innerHTML = calendarHTML.join('');
 }
 
-function nextMonth() {
+async function nextMonth() {
     if(currentMonth === 11) {
         currentYear++;
         currentMonth = 0;
     } else {
         currentMonth++;
     }
-    renderCalendar(currentYear, currentMonth);
+    await renderCalendar(currentYear, currentMonth);
 }
 
-function prevMonth() {
+async function prevMonth() {
     if(currentMonth === 0) {
         currentYear--;
         currentMonth = 11;
     } else {
         currentMonth--;
     }
-    renderCalendar(currentYear, currentMonth);
+    await renderCalendar(currentYear, currentMonth);
 }
 
 function selectDate(date) {
     alert(`You selected: ${date}`);
+}
+
+async function getEventsOnDay(year, month, day) {
+    try {
+        const response = await fetch('/get_events_for_day', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                year: year,
+                month: month,
+                day: day
+            })
+        });
+
+        if(!response.ok) {
+            console.error('Failed to fetch events for day');
+            return 0;
+        }
+        const data = await response.json();
+        const length = Object.keys(data).length;
+        console.log(length);
+        return length;
+    }
+    catch(error) {
+        console.error('Error: ', error);
+        return 0;
+    }
 }
 
 const currentDate = new Date();

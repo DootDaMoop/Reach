@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS "group" (
     group_name          VARCHAR(255) NOT NULL,
     group_description   VARCHAR(1000),
     group_public        BOOLEAN,
-    group_picture   BYTEA,
+    group_picture       BYTEA,
     FOREIGN KEY (user_id) REFERENCES "user"(user_id),
     PRIMARY KEY (group_id)
 );

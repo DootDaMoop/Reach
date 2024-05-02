@@ -2,7 +2,7 @@ import os
 import pathlib
 import requests
 import json
-from flask import Flask, session, abort, redirect, request, render_template
+from flask import Flask, session, abort, redirect, request, render_template, url_for, jsonify
 from google.oauth2 import id_token
 from google_auth_oauthlib.flow import Flow
 from pip._vendor import cachecontrol
@@ -14,9 +14,6 @@ from functools import wraps
 load_dotenv()
 
 app = Flask(__name__)
-
-# user = User()
-# user_management = User_management(r"user_repo\users.csv")
 
 with open('client_secrets.json', 'r') as file:
     config = json.load(file)
@@ -110,11 +107,6 @@ def index():
 def registration():
     return render_template('registration.html')
 
-@app.get('/calendar')
-def calendar():
-    return render_template('calendar.html')
-
-
 @app.post('/register')
 def register():
     username = request.form['username']
@@ -133,8 +125,6 @@ def register():
         return redirect('/')
     else:
         return message, 400
-
-    
 
 @app.post('/login_manual')
 def login_manual():
@@ -163,35 +153,194 @@ def login_manual():
 @app.get('/home')
 @login_is_required
 def home():
-    groups = group_repo.get_groups_from_user_id(session['user_id']) # This is wrong because this will only list groups that the user OWNS
-    print(groups)
-    return render_template("home.html", groups=groups)
+    session['prev_url'] = url_for('home')
+    groups = group_repo.get_groups_from_user_id(session['user_id'])
+    home_events = event_repo.get_all_user_group_events(session['user_id'])
+    return render_template("home.html", groups=groups, home_events=home_events, verify_admin_user=event_repo.verify_user_admin_for_event)
 
 #the page if you click on a group
-@app.get("/groups/<group_id>/")
-def group(group_id:str):
+@app.get('/groups/<int:group_id>/')
+def group(group_id: int):
+    session['prev_url'] = url_for('group', group_id=group_id)
     group = group_repo.get_user_group_from_group_id(group_id) # indiviudal group instance of selected element
     member_count = group_repo.get_member_count_from_group_id(group_id) # selcted group's member count
-    group_owner = group_repo.get_group_and_user_from_group_and_user_id(session['user_id'], group_id) # returns joint table between user-membership-group 
+    group_owner = group_repo.get_group_and_user_from_group_id(group_id) # returns joint table between user-membership-group 
+
+    members = group_repo.get_members_from_group_id(group_id)
     membership = group_repo.get_role_in_group_from_user_and_group_id(session['user_id'], group_id) # Get user's role in group
-    
+    group_events = event_repo.get_all_user_group_events_for_selected_group(session['user_id'], group_id) # Gets all events from group that user has been pending(invited) to.
     
     # Everything above this comment is information for the indvidual selected group
     sidebar_groups = group_repo.get_groups_from_user_id(session['user_id'])
-    return render_template("group.html", group=group, sidebar_groups=sidebar_groups, group_owner=group_owner, member_count = member_count, membership=membership)
+    return render_template('group.html', group=group, sidebar_groups=sidebar_groups, group_owner=group_owner, member_count = member_count, membership=membership, group_events=group_events, members=members)
 
-@app.route("/groups/<group_id>/group_edit/", methods=['GET', 'POST'])
+@app.get("/groups/<group_id>/group_edit/")
 def edit(group_id: str):
-    group_name = group_repo.get_group_name_by_id(group_id)
-    status = group_repo.get_group_public_status(group_id)
-    description = group_repo.get_group_description_by_id(group_id)
-    members = group_repo.get_members_and_roles(group_id)
-    new_group_name = group_repo.update_group_name(group_id, request.form.get('group_name'))
-    new_status = group_repo.update_group_status(group_id, True if request.form.get('privacy') == "on" else False)
-    new_description = group_repo.update_group_description(group_id, request.form.get('description'))
-    
-    return render_template("group_edit.html", description=description, group_name=group_name, status=status, members=members, group_id=group_id)
+    members = group_repo.get_members_from_group_id(group_id)
+    group = group_repo.get_user_group_from_group_id(group_id)
+    return render_template("group_edit.html", members=members, group=group)
 
+
+@app.post('/accept_event')
+def accept_event():
+    data = request.json
+    event_id = data['eventId']
+    user_id = data['userId']
+
+    if not event_id or not user_id:
+        return jsonify({'error': 'missing eventId or userId'}), 400
+    
+    if int(user_id) != session['user_id']:
+        return jsonify({'error': 'Unauthorized user'}), 401
+    
+    event_repo.accept_event(event_id, user_id)
+
+    return jsonify({'message': 'Event accepted successfully'})
+
+@app.post('/decline_event')
+def decline_event():
+    data = request.json
+    event_id = data['eventId']
+    user_id = data['userId']
+
+    if not event_id or not user_id:
+        return jsonify({'error': 'missing eventId or userId'}), 400
+    
+    if int(user_id) != session['user_id']:
+        return jsonify({'error': 'Unauthorized user'}), 401
+    
+    event_repo.decline_event(event_id, user_id)
+
+    return jsonify({'message': 'Event declined successfully'})
+
+@app.post('/revert_event')
+def revert_event():
+    data = request.json
+    event_id = data['eventId']
+    user_id = data['userId']
+
+    if not event_id or not user_id:
+        return jsonify({'error': 'missing eventId or userId'}), 400
+    
+    if int(user_id) != session['user_id']:
+        return jsonify({'error': 'Unauthorized user'}), 401
+    
+    event_repo.revert_event_choice(event_id, user_id)
+
+    return jsonify({'message': 'Event declined successfully'})
+
+@app.post('/get_events_for_day')
+def get_user_events_for_calendar_on_day():
+    data = request.json
+    year = data['year']
+    month = data['month']
+    day = data['day']
+
+    events = event_repo.get_user_events_for_day(session['user_id'],year, month, day)
+
+    return jsonify(events)
+
+
+@app.get('/groups/<int:group_id>/group_edit/')
+def get_edit_group_page(group_id: int):
+    if group_repo.get_role_in_group_from_user_and_group_id(session['user_id'], group_id)['user_role'] != (0 and 1):
+        return redirect(url_for('get_edit_group_page', group_id=group_id))
+
+    members = group_repo.get_members_from_group_id(group_id)
+    group = group_repo.get_user_group_from_group_id(group_id)
+    
+    
+    return render_template("group_edit.html", members=members, group=group)
+
+@app.post("/groups/<group_id>/group_edit/")
+def save_group_edit_changes(group_id: str):
+    group_name = request.form.get('group-name')
+    group_description = request.form.get('description')
+    group_publicity = request.form.get('privacy') # grabs checkbox
+    print(group_publicity)
+    if(group_publicity is None): # if checkbox is blank, privacy is public --> true
+        group_publicity = True
+    elif(group_publicity == "on"):
+        group_publicity = False
+    
+    # TODO: CALL GROUP REPO METHODS TO UPDATE DATA INTO DATABASE
+    group_repo.update_group(group_id, group_name, group_description, group_publicity) # updates group
+    return redirect(url_for('edit', group_id=group_id))
+
+@app.get('/groups/<int:group_id>/create_event/')
+def get_create_event_page(group_id:int):
+    authorized_user_role = group_repo.get_role_in_group_from_user_and_group_id(session['user_id'], group_id)['user_role']
+    if authorized_user_role != 0 and authorized_user_role != 1:
+        return redirect(url_for('group', group_id=group_id))
+    
+    group = group_repo.get_user_group_from_group_id(group_id)
+    return render_template('create_event.html', group=group)
+
+@app.post('/groups/<int:group_id>/create_event/')
+def create_event_for_selected_group(group_id: int):
+    event_name = request.form.get('event_name')
+    event_description = request.form.get('event_description')
+    event_public = request.form.get('is_event_public')
+    event_start_date = request.form.get('event_start_date')
+    event_end_date = request.form.get('event_end_date')
+
+    if any(value is None or value == '' for value in [event_name, event_description, event_start_date, event_end_date]):
+        return redirect(url_for('get_create_event_page', group_id=group_id)) # TODO: Error Message!
+    
+    if event_public is None:
+        event_public = False
+
+    event = event_repo.create_event(session['user_id'],group_id, event_name, event_description, event_public, event_start_date, event_end_date)
+
+    # If an event is public then all the users in a group will be invited.
+    if event['event_public']:
+        event_repo.invite_all_users_in_group_to_event(group_id, event['event_id'])
+    # TODO: Just invite user_id who made the event
+
+    return redirect(f'/groups/{group_id}/')
+
+@app.get('/groups/<int:group_id>/event_edit/<int:event_id>/')
+def get_event_edit_page(group_id: int, event_id: int):
+    session['event_id'] = event_id
+    session['group_id'] = group_id
+    group = group_repo.get_user_group_from_group_id(group_id)
+    event = event_repo.get_event_by_event_id(event_id)
+    return render_template('edit_event.html', group=group, event=event)
+
+@app.post('/groups/<int:group_id>/event_edit/<int:event_id>/')
+def update_edited_event(group_id: int, event_id: int):
+    if event_id != session['event_id'] or group_id != session['group_id']:
+        return redirect(url_for('get_event_edit_page', group_id=session['group_id'], event_id=session['event_id']))
+
+    event_name = request.form.get('event_name')
+    event_description = request.form.get('event_description')
+    event_public = request.form.get('is_event_public')
+    event_start_date = request.form.get('event_start_date')
+    event_end_date = request.form.get('event_end_date')
+
+    if any(value is None or value == '' for value in [event_name, event_description, event_start_date, event_end_date]):
+        return redirect(url_for('get_event_edit_page', event_id=session['event_id'])) # TODO: Error Message
+
+    if event_public is None:
+        event_public = False
+
+    event_repo.edit_event(event_id, event_name, event_description, event_public, event_start_date, event_end_date)
+
+    return redirect(session['prev_url'])
+
+@app.post('/groups/<int:group_id>/event_edit/<int:event_id>/delete/')
+def delete_event(event_id: int, group_id: int):
+    if event_id != session['event_id'] or group_id != session['group_id']:
+        return redirect(url_for('get_event_edit_page', group_id=session['group_id'], event_id=session['event_id']))
+    
+    event = event_repo.get_event_by_event_id(event_id)
+
+    # If the event is false, and the user's who made the event is not the logged in user or the owner of the group.
+    if event['event_public'] is False and (event['user_id'] != session['user_id'] or group_repo.get_user_group_from_group_id(event['group_id'])['user_id'] != session['user_id']):
+        return redirect(url_for('get_event_edit_page', group_id=group_id, event_id=event_id))
+    
+    event_repo.delete_event(event_id)
+    return redirect(session['prev_url'])
 
 @app.get('/profile/<int:user_id>')
 def profile(user_id: int):
@@ -206,13 +355,25 @@ def get_edit_user_profile_page(user_id: int):
     else:
         return 'Unauthorized Access', 401
 
-@app.post('/profile/<user_id>/edit')
+@app.post('/profile/<int:user_id>/edit')
 def edit_user_profile(user_id: int):
+    if user_id != session['user_id']:
+        return redirect(url_for(get_edit_user_profile_page, user_id=session['user_id']))
+    
     user = user_repo.get_user_from_user_id(session['user_id'])
-    new_user = user_repo.edit_user(user['user_id'], request.form.get('username'), request.form.get('email'), request.form.get('password'), request.form.get('first_name'), request.form.get('last_name'))
-    profile_picture = user_repo.update_profile_picture(session['user_id'], request.files.get('profile_picture'))
-    print(profile_picture)
-    return redirect(f"/profile/{user_id}")
+    username = request.form.get('username')
+    email = request.form.get('email')
+    password = request.form.get('password')
+    first_name = request.form.get('first_name')
+    last_name = request.form.get('last_name')
+
+    if any(value is None or value == '' for value in [username, email, password]):
+        return redirect(url_for('get_edit_user_profile_page', user_id=session[user_id])) # TODO: Error Message
+
+    profile_picture = user_repo.update_profile_picture(session['user_id'], request.files.get('profile_picture')) # TODO: Add separate var for pfp and combine to main update function
+    user_repo.edit_user(user['user_id'], username, email, password, first_name, last_name)
+
+    return redirect(url_for(get_edit_user_profile_page, user_id=session['user_id']))
 
 @app.get('/event_picture/<int:event_id>')
 def event_picture(event_id):
@@ -231,7 +392,13 @@ def group_picture(group_id):
 def get_create_group_page():
     return render_template('create_group.html')
 
+@app.get('/find_group')
+def load_find_group_page():
+    groups = group_repo.all_groups()
+    return render_template('find_group.html', groups=groups)
+
 @app.post('/groups/create/')
+@login_is_required
 def create_group_page():
     group_name = request.form.get('group_name')
     group_description = request.form.get('group_description')

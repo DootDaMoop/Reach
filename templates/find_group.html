@@ -1,0 +1,66 @@
+{% extends '_layout.html' %}
+
+{% block title %}Find Group{% endblock %}
+{%  block head_script %}
+<link rel="stylesheet" href="/static/edit.css">
+<script src="/static/group_edit.js" defer></script>
+{% endblock %}
+
+{% block main %}
+<style>
+    .group-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        padding: 20px;
+    }
+    .group-instance {
+        width: 300px;
+        height: 450px;
+        background: rgb(54, 150, 230);
+    }
+    .instance-img {
+        width: 300px;
+        height: 200px;
+        border: solid 4px;
+    }
+    .instance-content {
+        width: 300px;
+        height: 250px;
+        border: solid 4px;
+    }
+    
+</style>
+
+<div class="container">
+    <form action="">
+        <label class="form mt-2"for="search">Search Groups:</label>
+        <input type="text" id="search" name="search" class="form-control">
+    </form>
+</div>
+
+<div class="container">
+    <div class="row">
+        {% for group in groups %}
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <img class="card-img-top" src="/static/img/SPECTRAL.webp" alt="Card image cap">
+                <div class="card-body">
+                    <h5 class="card-title">{{ group.group_name }}</h5>
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                    <a href="/groups/{{ group['group_id'] }}" class="btn btn-primary">View</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        <!-- Add more cards here as needed -->
+    </div>
+</div>
+
+
+<div class="create-group container flex mb-8">
+    <h1>Can't Find A group? Make your own!</h1><a class="btn btn-primary mb-6 " href="/groups/create">Create</a>
+</div>
+
+{% endblock %}
+
