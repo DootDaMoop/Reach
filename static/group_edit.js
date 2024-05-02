@@ -79,7 +79,7 @@ function edit_mode(){
 
     // --- Content of form --- //
     label_input1.textContent = 'Group Name:';
-    label_input2.textContent = 'Privacy:';
+    label_input2.textContent = 'Private? ';
     label_textarea.textContent = 'Description:';
     submit.textContent = 'Save';
 
@@ -125,7 +125,8 @@ function edit_mode(){
     group_card.style.height = '400px';
     textarea.style.height = '100px';
     // Now we want to remove the existing elements inside the group card
-    myson.remove(); // making krevat life easier by removing his 2 hour commute 
+    myson.remove(); 
+    // making krevat life easier by removing his 2 hour commute 
 
 
 

@@ -190,11 +190,15 @@ def edit(group_id: str):
 def save_edit(group_id: str):
     group_name = request.form.get('group-name')
     group_description = request.form.get('description')
-    group_publicity = request.form.get('privacy')
-    if(group_publicity is None):
+    group_publicity = request.form.get('privacy') # grabs checkbox
+    print(group_publicity)
+    if(group_publicity is None): # if checkbox is blank, privacy is public --> true
+        group_publicity = True
+    elif(group_publicity == "on"):
         group_publicity = False
-    # CALL GROUP REPO METHODS TO UPDATE DATA INTO DATABASE
     
+    # TODO: CALL GROUP REPO METHODS TO UPDATE DATA INTO DATABASE
+    group_repo.update_group(group_id, group_name, group_description, group_publicity) # updates group
     return redirect(url_for('edit', group_id=group_id))
 
 @app.get('/profile/<int:user_id>')

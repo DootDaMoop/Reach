@@ -161,6 +161,19 @@ def all_groups():
 
 
 # TODO: Update group details
+def update_group(id: str, name: str, description: str, privacy: bool):
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=dict_row) as cursor:
+            cursor.execute('''
+                            UPDATE 
+                                "group"
+                            SET 
+                                group_name = %s, group_description = %s, group_public = %s
+                            WHERE
+                                group_id = %s;
+                            ''', [name, description, privacy, id])
+            cursor.fetchall
 
 # TODO: Delete a group
 
