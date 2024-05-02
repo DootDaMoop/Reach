@@ -56,17 +56,17 @@ def schedule_email(event_time_str, hours_before = 0, minutes_before=0, seconds_b
     else:
         print("Send time is in the past. Email will not be sent.")
 
-event_time_str = "2024-5-02 03:03:50" 
-hours_before = 0    
-minutes_before = 0 
-seconds_before = 0
+# event_time_str = "2024-5-02 03:03:50" 
+# hours_before = 0    
+# minutes_before = 0 
+# seconds_before = 0
 
-thread = threading.Thread(target=schedule_email, args=(event_time_str, hours_before, minutes_before, seconds_before))
-thread.start()
+# thread = threading.Thread(target=schedule_email, args=(event_time_str, hours_before, minutes_before, seconds_before))
+# thread.start()
 
-for i in range(10):
-    print(i)
-    time.sleep(1)
+# for i in range(10):
+#     print(i)
+#     time.sleep(1)
 
 
     
