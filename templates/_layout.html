@@ -9,19 +9,30 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='calendar.css') }}">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <script src="/static/slider.js" defer></script>
     {% block head_script %}{% endblock %}
     
     
 </head>
 <body>
-    <header class="bg-black text-white h-16">
+    <header class="bg-black text-white">
         <nav class="nav-grid">
             <ul>
                 <li><a href="/home">Home</a></li>
                 <li><a href="/find_group">Find Groups</a></li>
                 <li><a href="/profile/{{ session['user_id'] }}">Profile</a></li>
+                <li><a href="/event">Event</a></li>
             </ul>
         </header>
+    <div class="circle">
+        <img class="circle-img" id="picon" src="/static/img/Mukaka.jpg" alt="profile picture">
+    </div>
+    <div class="profile-menu hidden" id="menu">
+        <ul class="list-group">
+            <li class="list-group-item list-group-item-action"><a href="/profile/{{ session['user_id'] }}">My Profile</a></li>
+            <li class="list-group-item list-group-item-action"><a href="/logout">Logout</a></li>
+        </ul>
+    </div>
     <main>{% block main %}{% endblock %}</main>
     <footer class="bg-black text-white height-400px"><div>JACD@Project.com</div></footer>
 

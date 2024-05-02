@@ -404,6 +404,10 @@ def create_group_page():
         return redirect('/home')
     else:
         return message, 400
+    
+@app.get('/event')
+def event():
+    return render_template("event.html")
 
 if __name__ == "__main__":
     app.run(debug=True)

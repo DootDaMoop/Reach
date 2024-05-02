@@ -10,12 +10,15 @@ li:hover {
     cursor: pointer;
 }
 header {
-    align-content: center;    
+    align-content: center;
+    height: 80px; 
+    border-bottom: solid gray 2px;
 }
 footer {
     position: fixed;
     bottom: 0;
     width: 100%;
+    z-index: 9999;
 }
 .nav-grid ul{
     display: flex;
@@ -229,147 +232,69 @@ img {
     padding: 6px;
 }
 
-
-/* - - - - - copy and paste css from edit.ccss - - - - - */
-
-.group-edit-card {
-    border: solid 1px;
-    margin: 16px;
-    display: flex;
-    height: 200px;
-    border-radius: 5px;
-    overflow: scroll;
-}
-.edit-icon:hover {
-    cursor: pointer;
-    scale: 1.05;
-}
-.group-image-container {
-    flex: 1;
-    flex-wrap: wrap;
-    align-content: center;
-    padding-left: 8px;
-}
-.spec {
-    margin: auto;
+@keyframes menuSlider {
+    from {
+        width: 0px;
+    }
+    to{
+        width: 300px;
+    }
 }
 
-.group-info {
-    /* flex-grow: 2;
-    background-color: aqua; */
-    flex: 8;
-    padding: 6px;
-}
-.edit-form {
-    display: none;
-    background-color: aqua;
-    padding: 10px;
-    margin-top: 10px;
-}
-
-.form-wrapper {
-    margin: 20px auto;
-    padding: 15px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-}
-.form-wrapper label {
-    display: block;
-    margin-bottom: 5px;
-}
-.form-wrapper input[type="text"],
-.form-wrapper textarea {
-width: 100%;
-padding: 10px;
-border: 1px solid #ccc;
-border-radius: 3px;
-}
-
-.form-wrapper input[type="submit"] {
-background-color: #4CAF50;
-color: white;
-padding: 10px 20px;
-border: none;
-border-radius: 5px;
-cursor: pointer;
-}
-
-/*- - - - - member list designs - - - - - */
-.member-list {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-.member {
-    margin: 0px 16px;
-    display: flex;
-    flex-direction: row;
-    height: 80px;
-    border-radius: 5px;
-    border: solid 1px;
-    align-items: center;
-    justify-content: space-around;
-    box-shadow: 1px 1px;
-    background: rgb(230, 230, 230);
-}
-.member:hover {
-    background: rgb(178, 178, 178); /* Scale up on hover */
-}
-.dropdown-item:hover {
-    background-color: rgb(178, 178, 178);
-    cursor: pointer;
-}
-/*- - - - - member list designs - - - - - */
-
-/*- - - - - kick confirm design - - - - - */
-.kick-confirm {
-    width: 350px;
-    height: 200px;
-    background-color: gray;
-    color: white;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-    padding: 6px 0; /* padding: y x*/
-    border-radius: 5px;
-    border: solid 2px black;
-
-}
-.kick-confirm-divider {
-    background-color: white;
-    width: 100%;
-    height: 2px;
-}
-.confirm-buttons {
-    display: flex;
-    gap: 30px;
-}
-.confirm-button {
-    border: solid white 1px;
-    padding: 6px;
-    border-radius: 6px;
-}
-.confirm-button:hover {
-    border: black solid 1px;
-    color: black;
-}
-.dimmed-background {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
+/* - - - - - profile styles - - - - - */
+.profile-menu {
+    position: absolute;
+    right: 0;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.7); /* semi-transparent black */
-    z-index: 9999; 
-    display: none; /* initially hidden */
+    width: 20%;
+    background-color: #161b22;
+    z-index: 9998;
+    animation: menuSlider 300ms forwards; /* Apply the menuSlider animation with a duration of 1 second and ease-in timing function */
 }
-/*- - - - - kick confirm design - - - - - */
+.profile-menu:hover {
+    transform: scaleX(1);
+}
+.list-group {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
 
-/* - - - - - edit form design - - - - - - */
+.list-group-item-action {
+    background-color: transparent;
+    color: white;
+}
+.list-group-item-action:hover {
+    color: white;
+    background-color: rgb(79, 79, 79)
+}
+/* circle style */
+.circle {
+    width: 68px; /* change size here */
+    height: 68px; /* change size here */
+    top: 0.7%; 
+    right: 2%;
+    position: absolute;
+    background-color: black;
+    display: flex;
+    border-radius: 50%;
+    justify-content: center;
+    align-items: center;
+    border: solid white 2px;
+}
+.circle-img {
+    width: 99%;
+    height: 99%;
+    position: relative;
+    shape-image-threshold: inherit;
+    border-radius: 50%;
+}
+.circle-img:hover {
+    cursor: pointer;
+}
+
+
+/* circle style */
 
 
